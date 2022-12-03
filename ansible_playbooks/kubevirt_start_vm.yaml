@@ -1,0 +1,71 @@
+- hosts: localhost
+  connection: local
+  vars:
+    #ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Creating a kubeconfig file
+      copy:
+        dest: "/tmp/kubeconfig"
+        mode: "0600"
+        content: |
+            apiVersion: v1
+            kind: Config
+            clusters:
+            - name: "cyber-range"
+              cluster:
+                insecure-skip-tls-verify: true
+                server: ##SERVER##
+
+            users:
+            - name: "cyber-range"
+              user:
+                token: ##TOKEN##
+            
+            contexts:
+            - name: "cyber-range"
+              context:
+                user: "cyber-range"
+                cluster: "cyber-range"
+
+            current-context: "cyber-range"
+
+    - name: replace text SERVER
+      replace:
+        path: /tmp/kubeconfig
+        regexp: '##SERVER##'
+        replace: "{{ kube_api_url | quote }}"
+
+    - name: replace text TOKEN
+      replace:
+        path: /tmp/kubeconfig
+        regexp: '##TOKEN##'
+        replace: "{{ kube_api_token | quote }}"
+
+    - name: kubevirt
+      kubevirt_vm:
+        state: running
+        namespace: "{{ kube_namespace }}"
+        ephemeral: "{{ ephemeral | default ('no') }}"
+        validate_certs: no
+        kubeconfig: /tmp/kubeconfig
+        wait: "{{ wait | default('no') }}"
+        wait_timeout: "{{ wait_timeout | default(180) }}"
+        name: "{{ vm_name }}"
+        cpu_cores: "{{ cpu_cores }}"
+        memory: "{{ memory }}"
+        disks:
+          - name: containerdisk
+            volume:
+              containerDisk:
+                image: "{{ vm_image }}"
+            disk:
+              bus: virtio
+        interfaces:
+          - name: default
+            bridge: {}
+            network:
+              pod: {}
+        cloud_init_nocloud:
+          userData: |-
+            #cloud-config
+            "{{ cloud_init_data | default('') }}"

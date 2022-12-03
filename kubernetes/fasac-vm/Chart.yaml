@@ -1,0 +1,7 @@
+apiVersion: v2
+appVersion: "0.1"
+description: Creates a Virtual Machine with KubeVirt.
+name: fasac-vm
+version: "0.1"
+maintainers:
+- name: Stefan P.

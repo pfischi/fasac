@@ -1,0 +1,16 @@
+AWX: 
+  # enable use of awx-deploy template
+  enabled: true
+  name: awx
+  spec:
+    admin_user: admin
+    ingress_type: ingress
+    hostname: awx.cyber
+    
+    projects_persistence: true
+    projects_storage_class: longhorn
+    projects_storage_size: 20Gi
+    projects_storage_access_mode: ReadWriteOnce # Wichtig, Longhorn kann nur RWO. Deployment schlägt fehl bei ReadWriteMany (und das ist 'default' bei AWX)
+  postgres:
+    enabled: false
+

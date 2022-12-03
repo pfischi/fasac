@@ -1,0 +1,87 @@
+<script type="text/javascript">
+    RED.nodes.registerType('scenario-plane-clean', {
+        category: 'FASAC',
+        color: '#a6bbcf',
+        inputs: 1,
+        outputs: 3,
+        icon: "file.png",
+        outputLabels: [
+            "job success",
+            "job failed (partially)",
+            "stdout",
+        ],
+        defaults: {
+            name: {value: ""},
+            awxService: {type: "awx-config", required: true},
+            clusterService: {type: "cluster-config", required: true},
+            jobTimeout: {required: true, value: 300, validate: RED.validators.number()},
+        },
+        label: function () {
+            return this.name || "Scenario Plane: Clean";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="scenario-plane-clean">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-awxService"><i class="fa fa-tag"></i> AWX Server</label>
+        <input type="text" id="node-input-awxService" placeholder="AWX Server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-clusterService"><i class="fa fa-tag"></i> Kubernetes Cluster</label>
+        <input type="text" id="node-input-clusterService" placeholder="Kubernetes Cluster">
+    </div>
+    <div class="form-row">
+        <label for="node-input-jobTimeout"><i class="fa fa-tag"></i> Job Timeout</label>
+        <input type="text" id="node-input-jobTimeout" placeholder="">
+        <div class="form-tips"><b>Tip:</b> Seconds to wait until the executed job is marked as timed out.</div>
+    </div>
+
+</script>
+
+<script type="text/markdown" data-help-name="scenario-plane-clean">
+Creates a file.
+
+### Inputs
+
+: msg.payload (dictionary):  A dictionary containing the parameter for creating the file.
+
+### Outputs
+
+1. Standard output
+: msg.payload (string) : The standard output of the executed ansible job.
+
+2. Job success
+: msg.payload (list) : A list of job results if the job was finished successfully.
+
+3. Job failed (partially)
+: msg.payload (list) : A list of job results if the job failed (partially).
+
+### Details
+
+The following attributes can be set via `msg.payload`:
+
+```
+{
+    path: "/example/path"                       # required, must be an absoulte file path
+    mode: "0644",                               # optional, file mode
+    owner: "user",                              # optional, owner of the file
+    group: "usergroup",                         # optional, group of the file
+    content: "This is the file content."        # optional, plain text or base64-encoded string, default: false
+    isBase64Content: true | false               # optional, if true the content will be base64-decoded on the host
+}
+```
+If the file already exists, it will be overwritten with the given content value. To modify the file attributes use
+the "Modify File" node.
+
+### References
+
+Structure of a job response: https://docs.ansible.com/ansible-tower/3.2.3/html/towerapi/job_list.html#results
+
+Ansible copy module: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+
+</script>

@@ -1,0 +1,24 @@
+- name: Run Script
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: create a file with base64 content
+      copy:
+        content: "{{ content | b64decode }}"
+        dest: "{{ file_path }}"
+        owner: "{{ owner | default(omit) }}"
+        group: "{{ group | default(omit) }}"
+        mode: "{{ permissions | default(omit) }}"
+    
+    - shell: "{{ interpreter }} {{ file_path }}"
+      register: script
+
+    # Print the shell task's stdout.
+    - debug: msg={{ script.stdout }}
+
+    - name: Pause for 5 minutes to build app cache
+      ansible.builtin.pause:
+        minutes: 5

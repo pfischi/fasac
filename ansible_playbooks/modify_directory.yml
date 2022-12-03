@@ -1,0 +1,29 @@
+- name: Modify Directory
+  hosts: '{{ host }}'
+  vars:
+    ansible_ssh_private_key_file: "{{ ssk_key | default(omit) }}"
+    ansible_user: "{{ ssh_user | default(omit) }}"
+    ansible_password: "{{ ssh_password | default(omit) }}"
+    ansible_port: "{{ ssh_port | default(22,boolean=True) }}"
+  tasks:
+    - name: check if directory exists
+      stat:
+        path: "{{ path }}"
+      register: result
+
+    - fail:
+        msg: "{{ path }} not exists."
+      when: not result.stat.exists
+
+    - name: modify directory attributes
+      file:
+        path: "{{ path }}"
+        state: directory
+        owner: "{{ owner | default(omit) }}"
+        group: "{{ group | default(omit) }}"
+        mode: "{{ mode | default(omit) }}"
+        access_time: "{{ access_time | default(omit) }}"
+        access_time_format: "{{ access_time_format | default(omit) }}"
+        modification_time: "{{ modification_time | default(omit) }}"
+        modification_time_format: "{{ modification_time_format | default(omit) }}"
+        recurse: "{{ recurse | default(omit) }}"

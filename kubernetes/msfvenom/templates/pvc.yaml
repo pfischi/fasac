@@ -1,0 +1,24 @@
+{{- if .Values.persistence.enabled }}
+kind: "PersistentVolumeClaim"
+apiVersion: "v1"
+metadata:
+  name: {{ template "msfvenom.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ template "msfvenom.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+spec:
+  {{- if .Values.persistence.storageClass }}
+    {{- if ne "-" .Values.persistence.storageClass }}
+  storageClassName: {{ .Values.persistence.storageClass }}
+    {{- else }}
+  storageClassName: ""
+    {{- end }}
+  {{- end }}
+  accessModes:
+    - {{ default "ReadWriteOnce" .Values.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size | quote }}
+{{ end }}

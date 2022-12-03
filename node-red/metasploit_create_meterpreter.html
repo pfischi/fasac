@@ -1,0 +1,225 @@
+<script type="text/javascript">
+    RED.nodes.registerType('metasploit-create-meterpreter',{
+        category: 'FASAC',
+        color: '#a6bbcf',
+        inputs: 1,
+        outputs: 3,
+        icon: "file.png",
+        outputLabels: [
+            "job success",
+            "job failed (partially)",
+            "stdout",
+        ],
+        defaults: {
+            name: {value: ""},
+            awxService: {type:"awx-config", required: true},
+            clusterService: {type:"cluster-config", required: true},
+            jobTimeout: {required:true, value: 300, validate:RED.validators.number()},
+            metasploitServiceName: {
+                value: "",
+                required: true,
+                validate:function (value) {
+                    const pattern =  /(?=^.{0,23}$)^[a-z]([-a-z0-9]*[a-z0-9])$/g;
+                    const valid952HostnameRegex = new RegExp(pattern);
+                    return valid952HostnameRegex.test(value);
+                }
+            },
+            metasploitPayload: {value: "windows/x64/meterpreter/reverse_https", required: true},
+            metasploitLPORT: {value: 10000, required: true, validate:RED.validators.regex(/^()([1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5])$/)},
+            metasploitLHOST: {value: "127.0.0.1", required: true},
+            helmReleaseName: {
+                value: "",
+                required: true,
+                validate:function (value) {
+                    const pattern =  /(?=^.{0,23}$)^[a-z]([-a-z0-9]*[a-z0-9])$/g;
+                    const valid952HostnameRegex = new RegExp(pattern);
+                    return valid952HostnameRegex.test(value);
+                }
+            },
+            metasploitOutput: {value: "exe", required: true},
+            metasploitPayload: {value: "windows/x64/meterpreter_reverse_http", required: true}
+        },
+        label: function() {
+            return this.name||"Metasploit: Create Meterpreter";
+        },
+
+        oneditprepare() {
+            if($("#node-input-helmReleaseName").val().length === 0) {
+                $("#node-input-helmReleaseName").val(function () {
+                    const n1 = ["blue", "green", "red", "orange", "violet", "indigo", "yellow"];
+                    const n2 = ["one", "two", "three", "four", "five", "fix", "seven", "eight", "nine", "zero"]
+                    return n1[parseInt(Math.random() * n1.length)] + '-' + n2[parseInt(Math.random() * n2.length)] + Math.floor(Math.random() * 1000);
+                })
+            }
+
+            if($("#node-input-metasploitServiceName").val().length === 0) {
+                $("#node-input-metasploitServiceName").val(function () {
+                    const n1 = ["blue", "green", "red", "orange", "violet", "indigo", "yellow"];
+                    const n2 = ["one", "two", "three", "four", "five", "fix", "seven", "eight", "nine", "zero"]
+                    return n1[parseInt(Math.random() * n1.length)] + '-' + n2[parseInt(Math.random() * n2.length)] + Math.floor(Math.random() * 1000);
+                })
+            }
+            $("#node-input-metasploitPayload").typedInput({
+                types: [
+                    {
+                        value: "payload",
+                        options: [
+                            {
+                                value: "windows/x64/meterpreter/reverse_http",
+                                label: "windows/x64/meterpreter/reverse_http"
+                            },
+                            {
+                                value: "windows/x64/meterpreter/reverse_https",
+                                label: "windows/x64/meterpreter/reverse_https"
+                            },
+                            {
+                                value: "windows/x64/meterpreter_reverse_http",
+                                label: "windows/x64/meterpreter_reverse_http"
+                            },
+                            {
+                                value: "windows/x64/meterpreter_reverse_https",
+                                label: "windows/x64/meterpreter_reverse_https"
+                            },
+                            {   value: "linux/x86/meterpreter_reverse_http",
+                                label: "linux/x86/meterpreter_reverse_http"
+                            },
+                            {
+                                value: "linux/x86/meterpreter_reverse_https",
+                                label: "linux/x86/meterpreter_reverse_https"
+                            },
+                            {
+                                value: "linux/x64/meterpreter_reverse_http",
+                                label: "linux/x64/meterpreter_reverse_http"
+                            },
+                            {
+                                value: "linux/x64/meterpreter_reverse_http",
+                                label: "linux/x64/meterpreter_reverse_https"
+                            },
+                        ]
+                    }]
+            })
+
+            $("#node-input-metasploitOutput").typedInput({
+                types: [
+                    {
+                        value: "output",
+                        options: [
+                            { value: "asp", label: "asp"},
+                            { value: "aspx", label: "aspx"},
+                            { value: "axis2", label: "axis2"},
+                            { value: "dll", label: "dll"},
+                            { value: "elf", label: "elf"},
+                            { value: "elf-so", label: "elf-so"},
+                            { value: "exe", label: "exe"},
+                            { value: "exe-only", label: "exe-only"},
+                            { value: "exe-service", label: "exe-service"},
+                            { value: "exe-small", label: "exe-small"},
+                            { value: "hta-psh", label: "hta-psh"},
+                            { value: "jar", label: "jar"},
+                            { value: "jsp", label: "jsp"},
+                            { value: "loop-vbs", label: "loop-vbs"},
+                            { value: "macho", label: "macho"},
+                            { value: "msi", label: "msi"},
+                            { value: "msi-nouac", label: "msi-nouac"},
+                            { value: "psh", label: "psh"},
+                            { value: "psh-cmd", label: "psh-cmd"},
+                            { value: "psh-net", label: "psh-net"},
+                            { value: "psh-reflection", label: "psh-reflection"},
+                            { value: "python-reflection", label: "python-reflection"},
+                            { value: "vba", label: "vba"},
+                            { value: "vba-exe", label: "vba-exe"},
+                            { value: "vba-psh", label: "vba-psh"},
+                            { value: "vbs", label: "vbs"},
+                            { value: "war", label: "war"}
+                        ]
+                    }
+                ]
+            })
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="metasploit-create-meterpreter">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-awxService"><i class="fa fa-tag"></i> AWX Server</label>
+        <input type="text" id="node-input-awxService" placeholder="AWX Server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-clusterService"><i class="fa fa-tag"></i> Kubernetes Cluster</label>
+        <input type="text" id="node-input-clusterService" placeholder="Kubernetes Cluster">
+    </div>
+    <div class="form-row">
+        <label for="node-input-helmReleaseName"><i class="fa fa-tag"></i> Helm Release Name</label>
+        <input type="text" id="node-input-helmReleaseName" placeholder="Helm Release Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-metasploitServiceName"><i class="fa fa-tag"></i> Service Name</label>
+        <input type="text" id="node-input-metasploitServiceName" placeholder=" Service Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-metasploitPayload"><i class="fa fa-tag"></i> Payload</label>
+        <input type="text" id="node-input-metasploitPayload" placeholder="Payload">
+    </div>
+    <div class="form-row">
+        <label for="node-input-metasploitLHOST"><i class="fa fa-tag"></i> LHOST</label>
+        <input type="text" id="node-input-metasploitLHOST">
+    </div>
+    <div class="form-row">
+        <label for="node-input-metasploitLPORT"><i class="fa fa-tag"></i> LPORT</label>
+        <input type="number" id="node-input-metasploitLPORT">
+    </div>
+    <div class="form-row">
+        <label for="node-input-metasploitOutput"><i class="fa fa-tag"></i> Format</label>
+        <input type="text" id="node-input-metasploitOutput">
+    </div>
+    <div class="form-row">
+        <label for="node-input-jobTimeout"><i class="fa fa-tag"></i> Job Timeout</label>
+        <input type="text" id="node-input-jobTimeout" placeholder="">
+    </div>
+</script>
+
+<script type="text/markdown" data-help-name="metasploit-create-meterpreter">
+Creates a file.
+
+### Inputs
+
+: msg.payload (dictionary):  A dictionary containing the parameter for creating the file.
+
+### Outputs
+
+1. Standard output
+: msg.payload (string) : The standard output of the executed ansible job.
+
+2. Job success
+: msg.payload (list) : A list of job results if the job was finished successfully.
+
+3. Job failed (partially)
+: msg.payload (list) : A list of job results if the job failed (partially).
+
+### Details
+
+The following attributes can be set via `msg.payload`:
+
+```
+{
+    path: "/example/path"                       # required, must be an absoulte file path
+    mode: "0644",                               # optional, file mode
+    owner: "user",                              # optional, owner of the file
+    group: "usergroup",                         # optional, group of the file
+    content: "This is the file content."        # optional, plain text or base64-encoded string, default: false
+    isBase64Content: true | false               # optional, if true the content will be base64-decoded on the host
+}
+```
+If the file already exists, it will be overwritten with the given content value. To modify the file attributes use 
+the "Modify File" node.
+
+### References
+
+Structure of a job response: https://docs.ansible.com/ansible-tower/3.2.3/html/towerapi/job_list.html#results
+
+Ansible copy module: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+</script>

@@ -1,0 +1,85 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ template "msfvenom.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  name: {{ template "msfvenom.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ template "msfvenom.fullname" . }}
+      release: "{{ .Release.Name }}"
+  
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ template "msfvenom.fullname" . }}
+        release: "{{ .Release.Name }}"
+    
+    spec:
+      automountServiceAccountToken: false
+
+      containers:
+        - name: msfvenom
+          command: ["/bin/sh"]
+          args: 
+            - "-c"
+            - "mkdir -p /tmp/meterpreter && cd /tmp/meterpreter && {{ .Values.msfvenom.path }} {{ .Values.msfvenom.command }} -o /tmp/meterpreter/meterpreter && python3 -m http.server 80"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          readinessProbe:
+            httpGet: 
+              path: /
+              port: 80 
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: 
+              path: /
+              port: 80 
+            initialDelaySeconds: 15
+            periodSeconds: 20
+        
+
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.imagePullPolicy | default "Always"  }}
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+            privileged: false
+            capabilities:
+                add:
+                - NET_ADMIN  # needed for F2B
+                - NET_RAW    # needed for F2B
+                - NET_BIND_SERVICE
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+
+          volumeMounts:
+            # PVCs
+            {{ if .Values.persistence.enabled }}
+            - name: msf4
+              mountPath: /root/.msf4
+              readOnly: false
+            {{- end }}
+
+      volumes:
+        - name: msf4
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{- else }}{{ template "msfvenom.fullname" . }}{{- end }}
+        {{- else }}
+            emptyDir: {}
+        {{ end }}
+

@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+  - name: Store Helm Values to Variable
+    set_fact:
+      helm_val: "{{ helm_values | from_yaml }}"
+
+  - name: Add a repository
+    kubernetes.core.helm_repository:
+      name: repo
+      repo_url: "{{ helm_repo_url }}"
+      
+  - name: Deploy a release to Kubernetes with Helm
+    kubernetes.core.helm:
+      api_key: "{{ kube_api_token}}"
+      host: "{{ kube_api_url }}"
+      validate_certs: "{{ kube_verify_cert | default('no') }}"
+      release_name: "{{ helm_release_name }}"
+      chart_ref: "{{ 'repo/' + helm_chart }}"
+      release_namespace: "{{ kube_namespace }}"
+      update_repo_cache: true
+      atomic: "{{ atomic | default('yes') }}"
+      wait: "{{ wait | default('no') }}"
+      values: "{{ helm_val }}"
+      force: "{{ force | default('no') }}"

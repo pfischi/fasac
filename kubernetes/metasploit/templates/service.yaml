@@ -1,0 +1,56 @@
+---
+{{- if .Values.enableService }}
+
+kind: "Service"
+apiVersion: "v1"
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ template "metasploit.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  {{- if .Values.serviceName }}
+  name: "{{ .Values.serviceName }}"
+  {{- else }}
+  name: {{ template "metasploit.fullname" . }}
+  {{ end }}
+
+spec:
+  selector:
+    app.kubernetes.io/name: {{ template "metasploit.fullname" . }}
+    release: "{{ .Release.Name }}"
+  type: ClusterIP
+
+  ports:
+    # msfrpc
+    - name: msfrpc
+      port: {{ default 55553 .Values.service.port.msfrpc }}
+      targetPort: msfrpc
+      protocol: TCP
+    # Listner Ports for backconnects
+    - name: http
+      port: {{ default 80 .Values.service.port.httpBackConnect }}
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: {{ default 443 .Values.service.port.httpsBackConnect }}
+      targetPort: https
+      protocol: TCP
+    - name: backconnect1
+      port: {{ default 10000 .Values.service.port.tcpBackConnect1 }}
+      targetPort: backconnect1
+      protocol: TCP
+    - name: backconnect2
+      port: {{ default 10001 .Values.service.port.tcpBackConnect2 }}
+      targetPort: backconnect2
+      protocol: TCP
+    - name: backconnect3
+      port: {{ default 10002 .Values.service.port.tcpBackConnect3 }}
+      targetPort: backconnect3
+      protocol: TCP
+    - name: backconnect4
+      port: {{ default 10003 .Values.service.port.tcpBackConnect4 }}
+      targetPort: backconnect4
+      protocol: TCP
+
+{{ end }}

@@ -1,0 +1,38 @@
+image: fedora-cloud-container-disk-demo
+
+ssh:
+  enabled: true #  if true, a ssh service definition is created
+  name: # if empty, the service name is generated automatically
+  port: 22 
+
+cluster:
+  name: cluster.local # Cluster Domain Name
+
+ressources:
+    memory: 2Gi
+    cores: 2
+
+cloudInitUserData: ""
+
+                    # base64 encoded string with cloud-init-userdata
+                    # the following example needs to be base64 encoded (line #cloud-config must be set):
+                    #    
+                    #    #cloud-config
+                    #    users:
+                    #    - default
+                    #    - name: dispo
+                    #      gecos: Dieter Disponent
+                    #      lock_passwd: false
+                    #      sudo: ALL=(ALL) NOPASSWD:ALL
+                    #      passwd: $6$.B8Gf42rJ0V4P1VY$i02rEk8mYBJUW9xgNnjPBDnh0nWjKUE6cK4gLiOP0Nb5gTh1OO9uNYaBt.PSKm2mKcWl6bYSJZljOy6eqmG2K1
+                    #
+                    #        # password1234
+                    #     ssh_pwauth: True
+                    #     write_files:
+                    #     - content: |
+                    #         Super secret data! Do not view unless you have the clearance.
+                    #       path: /home/dispo/healthforever-contacts.txt   
+
+
+
+                    

@@ -1,0 +1,38 @@
+{{- if .Values.ssh.enabled }}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}"
+  labels:
+    app.kubernetes.io/name: {{ template "fasac-vm.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation,hook-failed
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        app.kubernetes.io/name: {{ template "fasac-vm.fullname" . }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        heritage: "{{ .Release.Service }}"
+        release: "{{ .Release.Name }}"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: post-install-job
+        image: "harbor.cyber/cyber-range/busybox"
+        {{- if .Values.ssh.name }}
+        command: ["sh", "-c", "until nc -z {{ .Values.ssh.name }}.{{ .Release.Namespace }}.svc.{{ .Values.cluster.name }} {{ .Values.ssh.port }} > /dev/null; do echo Waiting for VM.; sleep 2; done; exit;"]
+        {{ else }}
+        command: ["sh", "-c", "until nc -z  {{ include "fasac-vm.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.cluster.name }} {{ .Values.ssh.port }} > /dev/null; do echo Waiting for VM.; sleep 2; done; exit;"]
+        {{ end }}
+{{ end }}
+

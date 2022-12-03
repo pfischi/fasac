@@ -1,0 +1,38 @@
+{
+  "name": "node-red-contrib-awx",
+  "version": "0.0.2",
+  "dependencies": {
+    "awx-sdk": "^1.0.2",
+    "axios": "^0.27.2",
+    "docker-names": "^1.2.1",
+    "yaml": "^2.1.1",
+    "url": "^0.11.0,",
+    "decamelize": "^6.0.0",
+    "request": "^2.88.2",
+    "msgpack5": "^6.0.2",
+    "bluebird": "^3.7.2"
+  },
+  "node-red": {
+    "nodes": {
+      "awx-config": "awx-config.js",
+      "cluster-config": "cluster-config.js",
+      "mailserver-start": "mailserver_start_node.js",
+      "Metasploit: Start": "metasploit_start_node.js",
+      "metasploit-create-meterpreter": "metasploit_create_meterpreter.js",
+      "scenario-plane-prepare": "scenario-plane-prepare.js",
+      "scenario-plane-clean": "scenario-plane-clean.js",
+      "workload-stop": "workload_stop_node.js",
+      "create-file": "create_file_node.js",
+      "modify-file": "modify_file_node.js",
+      "modify-directory": "modify_directory_node.js",
+      "create-directory": "create_directory_node.js",
+      "delete-directory": "delete_directory_node.js",
+      "delete-file": "delete_file_node.js",
+      "host-ssh-config": "host-ssh-config.js",
+      "VM Start": "vm_start.js",
+      "MsfRpc: Config": "msfrpc-config.js",
+      "MsfRpc: Listener Start": "msfrpc-listener-start.js",
+      "MsfRpc: Session Command": "msfrpc-session-command.js"
+    }
+  }
+}

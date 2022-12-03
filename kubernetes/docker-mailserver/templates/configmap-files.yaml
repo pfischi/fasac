@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ template "dockermailserver.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  name: {{ template "dockermailserver.fullname" . }}-files
+
+immutable: false
+
+data:
+  postfix-accounts.cf: |
+  {{- with .Values.mailUsers }}
+  {{- range . }}
+    {{ .user }}|{SHA256}{{ .password | toString | trim | sha256sum }}
+  {{- end }}
+  {{- end }}
+
+  dovecot.cf: |
+    ssl = yes
+    disable_plaintext_auth=no
+

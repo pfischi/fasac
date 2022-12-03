@@ -1,0 +1,141 @@
+<script type="text/javascript">
+    RED.nodes.registerType('scenario-plane-prepare', {
+        category: 'FASAC',
+        color: '#a6bbcf',
+        inputs: 1,
+        outputs: 3,
+        icon: "file.png",
+        outputLabels: [
+            "job success",
+            "job failed (partially)",
+            "stdout",
+        ],
+        defaults: {
+            name: {value: ""},
+            awxService: {type: "awx-config", required: true},
+            clusterService: {type: "cluster-config", required: true},
+            jobTimeout: {required: true, value: 300, validate: RED.validators.number()},
+            scenarioPlaneNamespace: { value: "", required: true },
+            allowedCommunicationLabels: {value: [{key:'', value:''}], required: true, validate: function(o) {
+                    //check for duplicate keys in array and empty values
+                    const labels = [];
+                    for (const [key, v] of Object.entries(o)) {
+                        if (v.key.length === 0 || v.value.length === 0) {
+                            return false;
+                        }
+                        if (labels.includes(v.key)) {
+                            return false;
+                        }
+                        labels.push(v.key);
+                    }
+                    return true;
+                }
+            }
+        },
+        label: function () {
+            return this.name || "Scenario Plane: Prepare";
+        },
+        oneditprepare() {
+            var labelList = $('#node-input-allowedLabelNamespace').css('min-height','250px').css('min-width','450px').editableList({
+                sortable: true,
+                removable: true,
+                addItem: (container, i, data) => {
+                    if (!data.hasOwnProperty('key')) {
+                        data = {key: "", value: ""};
+                    }
+
+                    console.log('test')
+                    const labelKey = $('<input class="input-key" type="text" value="' + data.key + '">');
+                    const labelValue = $('<input class="input-value" type="text" value="' + data.value + '">');
+                    console.log('test2')
+                    const root = $('<div></div>');
+                    const keyEntry = $('<div class="form-row">');
+                    keyEntry.append('<label>Key</label>');
+                    keyEntry.append(labelKey);
+                    console.log('test3')
+                    const valueEntry = $('<div class="form-row divValue">');
+                    valueEntry.append('<label>Value</label>');
+                    valueEntry.append(labelValue);
+                    console.log('test4')
+                    root.append(keyEntry);
+                    root.append(valueEntry);
+                    root.appendTo(container);
+                    console.log(root)
+                    labelKey.on("change keyup paste", function () {
+                        // create mail address
+
+                        const labelKeyEntry = this.value;
+                        const labelFields = labelList.find('input.input-key').filter(function () {
+                            return this.value === labelKeyEntry;
+                        })
+                        if (labelFields.length > 1) {
+                            $(this).css('border', '1px solid rgb(214, 97, 95)');
+                        } else {
+                            $(this).css('border', '');
+                        }
+                    });
+                    labelKey.prop('required',true);
+                    labelValue.prop('required',true);
+                }
+            });
+
+            $("#node-input-clusterService").change(function () {
+                var config = RED.nodes.node($(this).val())
+                if(config) {
+                    $('#node-input-scenarioPlaneNamespace').val(config.namespace);
+                }
+            });
+
+            Object.entries(this.allowedCommunicationLabels).forEach(([index,v]) => {
+                const key = v.key;
+                const value = v.value
+                $('#node-input-allowedLabelNamespace').editableList('addItem', {key, value});
+            });
+        },
+        oneditsave() {
+            const labels = [];
+            $('#node-input-allowedLabelNamespace').editableList('items').each(function () {
+                const k = $(this).find('input.input-key').val();
+                const v= $(this).find('input.input-value').val();
+                labels.push({
+                    key: k,
+                    value: v
+                });
+            });
+            this.allowedCommunicationLabels = labels;
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="scenario-plane-prepare">
+    <style>
+        .divPassword {
+            margin-top: 5px;
+        }
+    </style>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-awxService"><i class="fa fa-tag"></i> AWX Server</label>
+        <input type="text" id="node-input-awxService" placeholder="AWX Server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-clusterService"><i class="fa fa-tag"></i> Kubernetes Cluster</label>
+        <input type="text" id="node-input-clusterService" placeholder="Kubernetes Cluster">
+    </div>
+    <div class="form-row">
+        <label for="node-input-scenarioPlaneNamespace"><i class="fa fa-tag"></i> Scenario Plane Namespace</label>
+        <input readonly class="input-scenarioPlaneNamespace" type="text" id="node-input-scenarioPlaneNamespace" placeholder="Scenario Plane Namespace">
+    </div>
+    <div class="form-row"><label> Allowed Communication Label</label>
+        <ol id="node-input-allowedLabelNamespace"></ol>
+    </div>
+    <div class="form-row">
+        <label for="node-input-jobTimeout"><i class="fa fa-tag"></i> Job Timeout</label>
+        <input type="text" id="node-input-jobTimeout" placeholder="">
+        <div class="form-tips"><b>Tip:</b> Seconds to wait until the executed job is marked as timed out.</div>
+    </div>
+
+</script>

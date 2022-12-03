@@ -1,0 +1,22 @@
+openssl [test platform:rpm]  # from collection amazon.aws
+gcc [test platform:rpm]  # from collection amazon.aws
+python3-devel [test platform:rpm]  # from collection amazon.aws
+rsync [platform:rhel-8 platform:rhel-9]  # from collection ansible.posix
+python38-pytz [platform:centos-8 platform:rhel-8]  # from collection awx.awx
+python38-requests [platform:centos-8 platform:rhel-8]  # from collection awx.awx, openstack.cloud, redhatinsights.insights, theforeman.foreman
+python38-pyyaml [platform:centos-8 platform:rhel-8]  # from collection awx.awx
+kubernetes-client [platform:fedora]  # from collection kubernetes.core
+openshift-clients [platform:rhel-8]  # from collection kubernetes.core
+gcc [compile platform:centos-8 platform:rhel-8]  # from collection openstack.cloud, ovirt.ovirt
+python38-cryptography [platform:centos-8 platform:rhel-8]  # from collection openstack.cloud
+python38-devel [compile platform:centos-8 platform:rhel-8]  # from collection openstack.cloud, ovirt.ovirt
+libcurl-devel [compile platform:centos-8 platform:rhel-8]  # from collection ovirt.ovirt
+libxml2-devel [compile platform:centos-8 platform:rhel-8]  # from collection ovirt.ovirt
+openssl-devel [compile platform:centos-8 platform:rhel-8]  # from collection ovirt.ovirt
+qemu-img [platform:centos-8 platform:rhel-8]  # from collection ovirt.ovirt
+python3-rpm [(platform:redhat platform:base-py3)]  # from collection theforeman.foreman
+rpm-python [(platform:redhat platform:base-py2)]  # from collection theforeman.foreman
+python38-devel [platform:rpm compile]  # from collection user
+subversion [platform:rpm]  # from collection user
+subversion [platform:dpkg]  # from collection user
+git-lfs [platform:rpm]  # from collection user

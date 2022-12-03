@@ -1,0 +1,7 @@
+apiVersion: v2
+appVersion: "11.1.0"
+description: msfvenom to create a meterpreter
+name: msfvenom
+version: "0.1"
+maintainers:
+- name: Stefan P.

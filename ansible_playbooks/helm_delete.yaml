@@ -1,0 +1,60 @@
+- hosts: localhost
+  connection: local
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    release_name: "{{ helm_release_name | default('') }}"
+  tasks:
+    - name: Creating a kubeconfig file
+      copy:
+        dest: "/tmp/kubeconfig"
+        mode: "0600"
+        content: |
+            apiVersion: v1
+            kind: Config
+            clusters:
+            - name: "cyber-range"
+              cluster:
+                insecure-skip-tls-verify: true
+                server: ##SERVER##
+
+            users:
+            - name: "cyber-range"
+              user:
+                token: ##TOKEN##
+            
+            contexts:
+            - name: "cyber-range"
+              context:
+                user: "cyber-range"
+                cluster: "cyber-range"
+
+            current-context: "cyber-range"
+
+    - name: replace text SERVER
+      replace:
+        path: /tmp/kubeconfig
+        regexp: '##SERVER##'
+        replace: "{{ kube_api_url | quote }}"
+
+    - name: replace text TOKEN
+      replace:
+        path: /tmp/kubeconfig
+        regexp: '##TOKEN##'
+        replace: "{{ kube_api_token | quote }}"
+
+    - name: List all Helm releases from a namespace
+      shell: helm list --all --short --namespace={{ kube_namespace }} --kubeconfig=/tmp/kubeconfig
+      register: releases
+      when: release_name | length == 0
+
+
+    - name: Delete all Helm releases from a namespace
+      shell: echo {{ releases.stdout | quote }} | xargs -L1 helm delete --wait --namespace={{ kube_namespace }} --kubeconfig=/tmp/kubeconfig
+      when: 
+        - release_name | length == 0
+        - releases.stdout | length > 0
+
+    - name: Delete a single Helm release from namespace
+      shell: helm delete {{ release_name }} --wait --namespace={{ kube_namespace }} --kubeconfig=/tmp/kubeconfig
+      when: release_name | length > 0
+

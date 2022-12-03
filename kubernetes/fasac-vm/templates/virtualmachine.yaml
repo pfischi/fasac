@@ -1,0 +1,42 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstance
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ template "fasac-vm.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  name: {{ template "fasac-vm.fullname" . }}
+spec:
+  terminationGracePeriodSeconds: 0
+  domain:
+    cpu:
+      cores: {{ .Values.ressources.cores }}
+    resources:
+      limits:
+        memory: "{{ .Values.ressources.memory }}"
+    devices:
+      disks:
+      - name: containerdisk
+        disk:
+          bus: virtio
+    {{- if .Values.cloudInitUserData }}
+      - name: cloudinitdisk
+        disk:
+          bus: virtio
+    {{ end }}
+      interfaces:
+      - name: default
+        masquerade: {}
+  networks:
+    - name: default
+      pod: {}
+  volumes:
+    - name: containerdisk
+      containerDisk:
+        image: {{ .Values.image }}
+    {{- if .Values.cloudInitUserData }}
+    - name: cloudinitdisk
+      cloudInitNoCloud:
+        userDataBase64: "{{ .Values.cloudInitUserData }}"
+    {{ end }}

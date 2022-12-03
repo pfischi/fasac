@@ -1,0 +1,40 @@
+<script type="text/javascript">
+    RED.nodes.registerType('MsfRpc: Listener Start',{
+        category: 'FASAC',
+        color: '#a6bbcf',
+        inputs: 1,
+        outputs: 1,
+        icon: "file.png",
+        outputLabels: [
+            "job uuid"
+        ],
+        label: function() {
+            return this.name||"MsfRpc: Listener Start";
+        },
+        defaults: {
+            name: { value: "" },
+            meterpreterWaitTime: { value: 3600 },
+            msfrpcConfig: { type:"MsfRpc: Config", required: true },
+            meterpreterSessionOnlyConnect: {value: true, required: true},
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="MsfRpc: Listener Start">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-msfrpcConfig"><i class="fa fa-tag"></i>MsfRpc Config</label>
+        <input type="text" id="node-input-msfrpcConfig">
+    </div>
+    <div class="form-row">
+        <label for="node-input-meterpreterWaitTime"><i class="fa fa-tag"></i>Wait Time (in seconds)</label>
+        <input type="number" id="node-input-meterpreterWaitTime">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-meterpreterSessionOnlyConnect">Session-only connect</label>
+        <input type="checkbox" id="node-config-input-meterpreterSessionOnlyConnect">
+    </div>
+</script>

@@ -1,0 +1,149 @@
+<script type="text/javascript">
+  RED.nodes.registerType('vm-start',{
+    category: 'FASAC',
+    color: '#a6bbcf',
+    inputs: 1,
+    outputs: 3,
+    icon: "file.png",
+    outputLabels: [
+      "job success",
+      "job failed (partially)",
+      "stdout",
+    ],
+    defaults: {
+      name: {value: ""},
+      awxService: {type:"awx-config", required: true},
+      clusterService: {type:"cluster-config", required: true},
+      jobTimeout: {required:true, value: 300, validate:RED.validators.number()},
+      sshServiceName: {value: "", required: true},
+      cloudInitUserData: {value: "", required: false},
+      cloudImage: {value: "harbor.cyber/cyber-range/ubuntu-22-10-server-cloud-custom", required: false},
+      accessibleSshName: {value: "", required: false},
+      helmReleaseName: {
+        value: "",
+        required: true,
+        validate:function (value) {
+          const pattern =  /(?=^.{0,23}$)^[a-z]([-a-z0-9]*[a-z0-9])$/g;
+          const valid952HostnameRegex = new RegExp(pattern);
+          return valid952HostnameRegex.test(value);
+        }
+      },
+      sshPort: {value: 22, required: true, validate:RED.validators.regex(/^()([1-9]|[1-5]?[0-9]{2,4}|6[1-4][0-9]{3}|65[1-4][0-9]{2}|655[1-2][0-9]|6553[1-5])$/)},
+    },
+    label: function() {
+      return this.name||"VM: Start";
+    },
+    oneditprepare() {
+      this.editor = RED.editor.createEditor({
+        id: 'node-input-cloudData',
+        mode: 'ace/mode/text',
+        value: this.cloudInitUserData
+      });
+
+      $("#node-input-sshServiceName").on("change keyup paste", function() {
+        var config = RED.nodes.node($("#node-input-clusterService").val());
+        if (config) {
+          $("#node-input-accessibleSshName").val(
+            $("#node-input-sshServiceName").val() + '.' + config.namespace + '.svc.' + config.clusterName + ':' + $("#node-input-sshPort").val()
+          );
+        }
+      });
+
+      $("#node-input-sshPort").on("change keyup paste", function() {
+        var config = RED.nodes.node($("#node-input-clusterService").val());
+        if (config) {
+          $("#node-input-accessibleSshName").val(
+                  $("#node-input-sshServiceName").val() + '.' + config.namespace + '.svc.' + config.clusterName + ':' + $("#node-input-sshPort").val()
+          );
+        }
+      });
+
+      $("#node-input-clusterService").change(function() {
+        var config = RED.nodes.node($(this).val());
+        if (config) {
+          $("#node-input-accessibleSshName").val(
+                  $("#node-input-sshServiceName").val() + '.' + config.namespace + '.svc.' + config.clusterName + ':' + $("#node-input-sshPort").val()
+          );
+        }
+      });
+
+      if($("#node-input-helmReleaseName").val().length === 0) {
+        $("#node-input-helmReleaseName").val(function () {
+          const n1 = ["blue", "green", "red", "orange", "violet", "indigo", "yellow"];
+          const n2 = ["one", "two", "three", "four", "five", "fix", "seven", "eight", "nine", "zero"]
+          return n1[parseInt(Math.random() * n1.length)] + '-' + n2[parseInt(Math.random() * n2.length)] + Math.floor(Math.random() * 1000);
+        })
+      }
+
+      if($("#node-input-sshServiceName").val().length === 0) {
+        $("#node-input-sshServiceName").val(function () {
+          const n1 = ["blue", "green", "red", "orange", "violet", "indigo", "yellow"];
+          const n2 = ["one", "two", "three", "four", "five", "fix", "seven", "eight", "nine", "zero"]
+          return n1[parseInt(Math.random() * n1.length)] + '-' + n2[parseInt(Math.random() * n2.length)] + Math.floor(Math.random() * 1000);
+        })
+      }
+    },
+    oneditsave: function() {
+      this.cloudInitUserData = this.editor.getValue();
+      this.editor.destroy();
+      delete this.editor;
+    },
+    oneditcancel: function() {
+      this.editor.destroy();
+      delete this.editor;
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="vm-start">
+  <style>
+    .divPassword {
+      margin-top: 5px;
+    }
+    input.blue {
+      color: blue;
+      -webkit-text-fill-color: blue
+    }
+  </style>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-awxService"><i class="fa fa-tag"></i> AWX Server</label>
+    <input type="text" id="node-input-awxService" placeholder="AWX Server">
+  </div>
+  <div class="form-row">
+    <label for="node-input-clusterService"><i class="fa fa-tag"></i> Kubernetes Cluster</label>
+    <input type="text" id="node-input-clusterService" placeholder="Kubernetes Cluster">
+  </div>
+  <div class="form-row">
+    <label for="node-input-helmReleaseName"><i class="fa fa-tag"></i> Helm Release Name</label>
+    <input type="text" id="node-input-helmReleaseName" placeholder="Helm Release Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-sshServiceName"><i class="fa fa-tag"></i> SSH Service Name</label>
+    <input type="text" id="node-input-sshServiceName" placeholder="SSH Service Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-sshPort"><i class="fa fa-tag"></i>SSH Port</label>
+    <input type="number" id="node-input-sshPort">
+  </div>
+  <div class="form-row">
+    <label for="node-input-accessibleSshName"><i class="fa fa-tag"></i>SSH accessible via</label>
+    <input readonly type="text" id="node-input-accessibleSshName" class="form-row blue">
+  </div>
+  <div class="form-row">
+    <label for="node-input-cloudImage"><i class="fa fa-tag"></i>Cloud Image</label>
+    <input type="text" id="node-input-cloudImage" placeholder="">
+  </div>
+
+  <div class="form-row node-text-editor-row" style="position:relative">
+    <label for="node-input-cloudData"><i class="fa fa-tag"></i>Cloud Init User Data</label>
+    <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-cloudData">
+  </div>
+  <div class="form-row">
+    <label for="node-input-jobTimeout"><i class="fa fa-tag"></i> Job Timeout</label>
+    <input type="text" id="node-input-jobTimeout" placeholder="">
+  </div>
+</script>

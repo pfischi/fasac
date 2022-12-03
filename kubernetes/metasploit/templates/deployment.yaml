@@ -1,0 +1,110 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ template "metasploit.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  name: {{ template "metasploit.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ template "metasploit.fullname" . }}
+      release: "{{ .Release.Name }}"
+  
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ template "metasploit.fullname" . }}
+        release: "{{ .Release.Name }}"
+    
+    spec:
+      automountServiceAccountToken: false
+
+      containers:
+        - name: metasploit
+          command: ["/usr/src/metasploit-framework/msfrpcd"]
+          args: 
+            - "-U"
+            - {{ .Values.msfrpcd.user | default "msf" | quote }}
+            - "-P"
+            - {{ .Values.msfrpcd.password | default "msf" | quote }}
+            - "-f"
+            - "-p"
+            - "55553"
+            {{ if not .Values.msfrpcd.ssl }}
+            - "-S"
+            {{ end }}
+
+          ports:
+            - name: msfrpc
+              containerPort: 55553
+              protocol: TCP
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            - name: backconnect1
+              containerPort: 10000
+              protocol: TCP
+            - name: backconnect2
+              containerPort: 10001
+              protocol: TCP
+            - name: backconnect3
+              containerPort: 10002
+              protocol: TCP
+            - name: backconnect4
+              containerPort: 10003
+              protocol: TCP
+
+          readinessProbe:
+            tcpSocket:
+              port: msfrpc
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            tcpSocket:
+              port: msfrpc
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.imagePullPolicy | default "Always"  }}
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+            privileged: false
+            capabilities:
+              add:
+              - NET_ADMIN  # needed for F2B
+              - NET_RAW    # needed for F2B
+              - NET_BIND_SERVICE
+          {{- if .Values.resources }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: msf4
+              mountPath: /root/.msf4
+              readOnly: false 
+
+      volumes:
+        - name: msf4
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{- else }}{{ template "metasploit.fullname" . }}{{- end }}
+        {{- else }}
+          emptyDir: {}
+        {{ end }}
+
+    

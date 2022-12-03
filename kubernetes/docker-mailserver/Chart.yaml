@@ -1,0 +1,7 @@
+apiVersion: v2
+appVersion: "11.1.0"
+description: A fork of 'https://github.com/docker-mailserver/docker-mailserver-helm'
+name: docker-mailserver
+version: "0.4"
+maintainers:
+- name: Stefan P.

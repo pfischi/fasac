@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ template "dockermailserver.fullname" . }}-rsa
+  labels:
+    app.kubernetes.io/name: {{ template "dockermailserver.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+type: Opaque
+data:
+  {{- $ca := genCA "default-ca" 365 }}
+  {{- $cn := default "example.com" .Values.dnsName }}
+  {{- $server := genSignedCert $cn ( default nil ) ( default nil ) 365 $ca }}
+  tls.crt: {{ $server.Cert | b64enc }}
+  tls.key: {{ $server.Key | b64enc }}

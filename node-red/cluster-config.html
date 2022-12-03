@@ -1,0 +1,46 @@
+<script type="text/javascript">
+    RED.nodes.registerType('cluster-config',{
+        category: 'config',
+        defaults: {
+            name: {value: ""},
+            host: {value: "", required: true},
+            clusterName: {value: "cluster.local", required: true},
+            rejectUnauthorized: {value: false, required: true},
+            namespace: {value: "", required: true},
+            helmRepoUrl: {value: "", required: true}
+        },
+        credentials: {
+            token: {type:"password", required: true}
+        },
+        label: function() {
+            return this.host + " - " + this.namespace
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="cluster-config">
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="fa fa-globe"></i>  Kubernetes API Url</label>
+        <input type="text" id="node-config-input-host">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-token"><i class="fa fa-key"></i>  Kubernetes API Token</label>
+        <input type="password" id="node-config-input-token">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-namespace"><i class="fa fa-key"></i>  Kubernetes Namespace</label>
+        <input type="text" id="node-config-input-namespace">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-clusterName"><i class="fa fa-globe"></i>  Kubernetes Cluster Name</label>
+        <input type="text" id="node-config-input-clusterName">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-helmRepoUrl"><i class="fa fa-key"></i>  Helm Repository URL</label>
+        <input type="text" id="node-config-input-helmRepoUrl">
+    </div>
+    <div class="form-row">
+        <input type="checkbox" id="node-config-input-rejectUnauthorized" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-config-input-rejectUnauthorized" style="width: auto">&ensp;Verify Certificates</label>
+    </div>
+</script>

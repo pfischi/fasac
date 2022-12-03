@@ -1,0 +1,24 @@
+Metadata-Version: 2.0
+Name: map
+Version: 1.3.0
+Summary: map applies a command to files/folders at a certain path.
+Home-page: https://github.com/THLO/map
+Author: Thomas Locher
+Author-email: thamasta@gmx.ch
+License: GNU General Public License v3 (GPLv3)
+Download-URL: https://github.com/THLO/map/tarball/v.1.3.0
+Platform: POSIX
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python
+Classifier: Topic :: Desktop Environment
+
+The same functionality to apply a command to     multiple files/folders
+can be achieved using for loops or find -exec or     similar tools.
+The advantage of map is that it is easier and more     convenient to use.
+More information on map can be found at     https://github.com/THLO/map or by running map --help.
+

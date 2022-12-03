@@ -1,0 +1,3 @@
+allowedCommunicationLabels: # if empty, an all-deny egres rule is deployed for the namespace
+    # kubernetes.io/metadata.name: fasac-control
+    # test: test

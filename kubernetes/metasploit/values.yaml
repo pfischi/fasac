@@ -1,0 +1,30 @@
+# image name of Metasploit Docker Image 
+image: harbor.cyber/cyber-range/metasploitframework/metasploit-framework
+imagePullPolicy: Always # default: Always
+
+serviceName: # leave it empty to generate a name based on helm release name and repo name
+enableService: true
+fullnameOverride: ""
+nameOverride: ""
+
+persistence:
+  enabled: false
+  storageClass: "" # StorageClass. If '' the default Storageclass is used.
+  # claimName: # Existing claim, otherwise the default storage class is used.
+  # accessMode: ReadWriteOnce #default: ReadWriteOnce
+  size: 100Mi
+
+service:
+  port:
+    msfrpc: 55553 # default: 55553
+    httpBackConnect: 80 # default: 80
+    httpsBackConnect: 443 # default: 443
+    tcpBackConnect1: 10000 # default: 10000
+    tcpBackConnect2: 10001 # default: 10001
+    tcpBackConnect3: 10002 # default: 10002
+    tcpBackConnect4: 10003 # default: 10003
+
+msfrpcd:
+  user: msf
+  password: msf
+  ssl: true

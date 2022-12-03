@@ -1,0 +1,33 @@
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ template "fasac-scenario.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  name: {{ template "fasac-scenario.fullname" . }}-netpolicy
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  {{- if .Values.allowedCommunicationLabels }}
+  egress:
+    {{- range $key, $val := .Values.allowedCommunicationLabels }}
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            {{ $key }}: {{ $val | quote }}  
+    {{- end}}
+  
+    - to:
+      ports:
+      - protocol: TCP
+        port: 53
+      - protocol: UDP
+        port: 53
+  {{- else }}
+  egress: []
+  {{- end }}
+  

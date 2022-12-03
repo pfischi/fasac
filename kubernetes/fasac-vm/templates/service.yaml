@@ -1,0 +1,29 @@
+---
+{{- if .Values.ssh.enabled }}
+kind: "Service"
+apiVersion: "v1"
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ template "fasac-vm.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  {{- if .Values.ssh.name }}
+  name: "{{ .Values.ssh.name }}"
+  {{- else }}
+  name: {{ template "fasac-vm.fullname" . }}
+  {{ end }}
+
+spec:
+  selector:
+    app.kubernetes.io/name: {{ template "fasac-vm.fullname" . }}
+    release: "{{ .Release.Name }}"
+  type: ClusterIP
+
+  ports:
+    # Transfer
+    - name: ssh
+      port: {{ .Values.ssh.port }}
+      targetPort: 22
+      protocol: TCP
+{{ end }}

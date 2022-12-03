@@ -1,0 +1,48 @@
+persistence:
+  enabled: true
+  storageClass: "" # StorageClass. If empty the default Storageclass is used.
+  # claimName: # Existing claim, otherwise the default storage class is used.
+  # accessMode: ReadWriteOnce #default: ReadWriteOnce
+  size: 100Mi
+
+#resources:
+#  requests:
+#    cpu: "1"
+#    memory: "1536Mi"
+#  limits:
+#    cpu: "2"
+#    memory: "2048Mi"
+
+
+myDomain: cluster.local
+serviceName: # leave it empty to generate a name based on helm release name and repo name
+image: mailserver/docker-mailserver:latest
+
+mailUsers:
+  - user: user1@example.mail
+    password: 12345
+  - user: user2@example.mail
+    password: 11111
+  - user: user3@example.mail
+    password: foobar
+
+environment:
+  # https://docker-mailserver.github.io/docker-mailserver/edge/config/environment/
+  TLS_LEVEL: modern # default: modern
+  POSTSCREEN_ACTION: drop # default: drop
+  OVERRIDE_HOSTNAME: example.mail # default: mail.example.com
+  FAIL2BAN_BLOCKTYPE: drop # default: drop
+  POSTMASTER_ADDRESS: postmaster@example.mail # default: postmaster@example.com
+  UPDATE_CHECK_INTERVAL: 10d # default: 10d
+  POSTFIX_INET_PROTOCOLS: ipv4 # default: ipv4
+  ONE_DIR: '1' # default: '1'
+  ENABLE_CLAMAV: '0' # default: '1'
+  ENABLE_POSTGREY: '0' # default: '0'
+  ENABLE_FAIL2BAN: '0' # default: '1'
+  AMAVIS_LOGLEVEL: '-1' # default: '-1'
+  SPOOF_PROTECTION: '0' # default: '1'
+  MOVE_SPAM_TO_JUNK: '0' # default: '1'
+  ENABLE_UPDATE_CHECK: '0' # default: '0'
+  ENABLE_SPAMASSASSIN: '0' # default: '1'
+  SUPERVISOR_LOGLEVEL: warn # default: warn
+  SPAMASSASSIN_SPAM_TO_INBOX: '0' # default: '1'

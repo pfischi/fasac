@@ -1,0 +1,26 @@
+kind: "Service"
+apiVersion: "v1"
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ template "msfvenom.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  {{- if .Values.serviceName }}
+  name: "{{ .Values.serviceName }}"
+  {{- else }}
+  name: {{ template "msfvenom.fullname" . }}
+  {{ end }}
+
+spec:
+  selector:
+    app.kubernetes.io/name: {{ template "msfvenom.fullname" . }}
+    release: "{{ .Release.Name }}"
+  type: ClusterIP
+
+  ports:
+    # Listner Ports for backconnects
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

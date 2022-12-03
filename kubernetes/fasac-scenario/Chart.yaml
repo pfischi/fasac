@@ -1,0 +1,7 @@
+apiVersion: v2
+appVersion: "0.1"
+description: Creates a scenario pane with all necessary ressources and network policies for FASAC
+name: fasac-scenario
+version: "0.1"
+maintainers:
+- name: Stefan P.
