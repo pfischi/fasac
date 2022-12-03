@@ -604,10 +604,6 @@ Der Ingress für Node-Red wurde in der Datei ```kubernetes/node-red/values.yaml`
 
 Für die meisten der in Node-Red bereitgestellten Logikbausteine wird ein valides Token für den Zugriff auf AWX-API benötigt. Um dies zu erzeugen, muss in die Weboberfläche von AWX gewechselt werden. Danach wird unter *Administration --> Applications --> Add* ein Eintrag mit dem Namen ```Node-Red``` erstellt. Als *Authorization grant type* wird der Wert ```Resource owner password-based``` gewählt. Der Punkt *Client type* wird auf ```Public``` gesetzt. Der nachfolgende Screenshot zeigt die entsprechenden Einstellungen.
 
-```yaml
-Client-ID: Hg5OZCNMF4NuuTsDp0UTC73i8XycILn2XB4hleiC
-```
-
 <img src="manual/awx_application.png" width="800">
 
 Anschließend muss der Benutzer ```fasac``` an der AWX-Oberfläche angemeldet werden und ein Token erzeugt werden, dass mit der Applikation ```Node-Red``` verknüpft wird. Dazu wird unter *Users --> fasac --> Tokens* ein Token erzeugt.
