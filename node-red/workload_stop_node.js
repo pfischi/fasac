@@ -55,17 +55,19 @@ module.exports = function(RED) {
                     
                     let msgStdoutResponse = { payload: stdout };
                     let allSuccessResponse, failedResponse;
+                    msg.payload = "";
 
                     if (!allSuccess){
                         node.status({ fill: "yellow", shape: "dot", text: `Job finished with errors.` });
-                        msg.payload = jobs;
+                        msg.jobresult = jobs;
                         failedResponse = msg;
                     } else {
-                        msg.payload = jobs;
+                        msg.jobresult = jobs;
                         allSuccessResponse = msg
                         node.status({ fill: "green", shape: "dot", text: `Job finished.` });
                     }
                     node.send([allSuccessResponse, failedResponse, msgStdoutResponse])
+
                 } catch (err) {
                     console.log(err)
                     node.status({ fill: "red", shape: "dot", text: err});
