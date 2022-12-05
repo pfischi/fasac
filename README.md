@@ -793,9 +793,15 @@ kubectl label namespace nodered plane=fasac-control
 
 ## Kubernetes Workloads für FASAC
 
+Einige Node-RED-Logikbausteine und Ansible Playbooks benötigen für ihre Ausführung Kubernetes Workloads in Form von Helm Charts. Im folgenden Abschnitt wird auf die Installation der entsprechenden Charts eingegangen.
+
 ### fasac-control
 
 Der Workload *fasac-control* ist ein Helm Chart, der vom Node-Red-Knoten *Scenario Plane Prepare* genutzt wird. Mit Stand 03.11.2022 ist seine einzige Funktion, Ausnahmen in den Netzwerkrichtlinien (ausgehende Verbindungen) zu setzen. Das Paket ```kubernetes/fasac-scenario/fasac-scenario-0.1.tgz``` wird nach Harbor in das Helm Repository im Projekt *cyber-range* geladen.
+
+### fasac-vm
+
+Der Workload *fasac-control* ist ein Helm Chart, der vom Node-Red-Knoten *VM Start* genutzt wird. Mit diesem Workload werden mithile von KubeVirt virtuelle Maschinen innerhalb des Kubernetes-Cluster gestartet. Das Paket ```kubernetes/fasac-vm/fasac-vm-0.1.tgz``` wird nach Harbor in das Helm Repository im Projekt *cyber-range* geladen.
 
 ### Metasploit und Msfvenom
 
@@ -826,64 +832,37 @@ docker tag mailserver/docker-mailserver:11.1.0 harbor.cyber/cyber-range/mailserv
 docker push harbor.cyber/cyber-range/mailserver/docker-mailserver:11.1.0
 ```
 
+## Bereitstellung und Anpassungen von Cloud-Images
 
+Beim Erstellen und Starten von virtuellen Maschinen (per KubeVirt) kommen sogenannte Cloud-Images zur. Hierbei ist zu beachten, dass diese Imgaes nicht eins zu eins übernommen werden können, sondern vorher in ein Docker-Image umgewandelt werden müssen, da KubeVirt nur ein solches Format liest. Gleichzeitig kann es je nach Szenario notwendig sein, die Images im Vorfeld anzupassen. Im folgenden Beispiel wird das Cloud-Image für Ubuntu Server 22.10 um das Python-Modul [*attachment-downloader*](https://github.com/jamesridgway/attachment-downloader) erweitert und in ein Docker-Image umgewandelt.
 
+### Herunterladen und Bearbeiten des Cloud-Images
 
-
-
-
-
-
-
-## NFS server
+Mit dem folgenden Befehl wird das Ubuntu Server 22.10 Cloud-Image heruntergeladen.
 ```bash
-sudo systemctl status nfs-server
-sudo apt install nfs-kernel-server nfs-common portmap
-sudo start nfs-server
-mkdir -p /home/pfuu/nfs 
-chmod -R 777 /home/pfuu/nfs # for simple use but not advised
-
-# edit /etc/exports
-sudo nano /etc/exports
-/home/pfuu/nfs  *(rw,sync,no_subtree_check,no_root_squash,insecure)
+wget https://cloud-images.ubuntu.com/kinetic/current/kinetic-server-cloudimg-amd64.img
 ```
 
-## NFS Provisioner for Kubernetes
+Im Anschluss wird das Image mithilfe der Software ```virt-customize``` (muss evtl. installiert werden) angepasst. Der nachfolgende Befehl installiert ```attachment-downloader``` in das Image.
+
 ```bash
-helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
-helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=172.16.30.99 --set nfs.path=/home/pfuu/nfs --namespace kube-system
+sudo virt-customize -a kinetic-server-cloudimg-amd64.img --run-command [pip3 install attachment-downloader]
 ```
-### special for Node-Red
-kubectl apply -f kubernetes/node-red/pvc.yaml --namespace nodered
 
+### Umwandlung in ein Docker-Image
 
+Abschließend wird das Cloud-Image in ein Docker-Image überführt. Dafür wird ```Dockerfile``` mit dem folgenden Inhalt erstellt:
 
+```bash
+FROM kubevirt/container-disk-v1alpha
+ADD kinetic-server-cloudimg-amd64.img /disk/
+```
 
+Danach wird das Docker-Image gebaut und in die Docker-Registry hochgeladen.
 
+```bash
+docker build . -t harbor.cyber/cyber-range/kinetic-server-cloudimg-amd64-custom
+docker push harbor.cyber/cyber-range/kinetic-server-cloudimg-amd64-custom
+```
 
-
-
-
-
-
-      https://github.com/jamesridgway/attachment-downloader
-
-  
-
-
-  qemu-img convert -f raw -O qcow2 ubuntu-22.10-server-cloudimg-amd64.img ubuntu.qcow2
-
-  sudo virt-customize -a ubuntu-22.10-server-cloudimg-amd64.img --run-command [pip3 install attachment-downloader]
-
-
-
-für fasac-vm
-
-docker pull alpine:3.3
-docker tag alpine:3.3 harbor.cyber/cyber-range/alpine:3.3
-docker push harbor.cyber/cyber-range/alpine:3.3
-
-
-docker pull busybox &&
-docker tag busybox harbor.cyber/cyber-range/busybox &&
-docker push harbor.cyber/cyber-range/busybox
+Das erstelle Docker-Image kann nun für die Erstellung von VMs mit KubeVirt genutzt werden (z.B. im FASAC-Modul *VM Start*).
