@@ -90,18 +90,16 @@ module.exports = function(RED) {
 
                     let msgStdoutResponse = {payload: stdout};
                     let allSuccessResponse, failedResponse;
+                    msg.jobresult = jobs;
+                    msg.helmReleaseName = this.helmReleaseName;
 
                     if (!allSuccess) {
                         node.status({fill: "yellow", shape: "dot", text: `Job finished with errors.`});
-                        msg.jobresult = jobs;
-                        msg.helmReleaseName = this.helmReleaseName;
                         failedResponse = msg;
                     } else {
                         msg.payload = "http://" +
                             this.metasploitServiceName + "." + this.clusterService.kubeNamespace + ".svc." + this.clusterName +
                             "/meterpreter"
-                        msg.helmReleaseName = this.helmReleaseName;
-                        msg.jobresult = jobs;
                         allSuccessResponse = msg
                         node.status({fill: "green", shape: "dot", text: `Job finished.`});
                     }
@@ -118,6 +116,6 @@ module.exports = function(RED) {
         }
     }
 
-    RED.nodes.registerType("metasploit-create-meterpreter", MetasploitCreateMeterpreter);
+    RED.nodes.registerType("Metasploit: Create Meterpreter", MetasploitCreateMeterpreter);
 }
 
