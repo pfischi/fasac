@@ -16,9 +16,9 @@
     "nodes": {
       "awx-config": "awx-config.js",
       "cluster-config": "cluster-config.js",
-      "mailserver-start": "mailserver_start_node.js",
+      "Mailserver: Start": "mailserver_start_node.js",
       "Metasploit: Start": "metasploit_start_node.js",
-      "metasploit-create-meterpreter": "metasploit_create_meterpreter.js",
+      "Metasploit: Create Meterpreter": "metasploit_create_meterpreter.js",
       "scenario-plane-prepare": "scenario-plane-prepare.js",
       "scenario-plane-clean": "scenario-plane-clean.js",
       "workload-stop": "workload_stop_node.js",
