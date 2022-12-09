@@ -763,7 +763,7 @@ kubectl get secret control \
   -o jsonpath='{.data.token}' | base64 -d
 ```
 
-### Szenarien-Netzwerkrichtlinie
+### Netzwerkrichtlinie für Szenarien
 
 Mit folgendem Befehl wird eine Netzwerkrichtlinie erstellt, die eine ausgehende Kommunikation der Pods in einem Namespace verbietet:
 
