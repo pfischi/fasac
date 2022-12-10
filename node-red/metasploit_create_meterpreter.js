@@ -15,11 +15,11 @@ module.exports = function(RED) {
             this.metasploitLHOST = config.metasploitLHOST;
             this.metasploitOutput = config.metasploitOutput;
             this.metasploitLPORT = Number(config.metasploitLPORT);
-            this.clusterName = "cluster.local"
+            this.clusterName = "cluster.local";
 
-            if(config.clusterService.clusterName) {
-                if (this.clusterName.length ==! 0) {
-                    this.clusterName = config.clusterService.clusterName
+            if(this.clusterService.clusterName) {
+                if (this.clusterService.clusterName.length ==! 0) {
+                    this.clusterName = this.clusterService.clusterName
                 }
             }
 

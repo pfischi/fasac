@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('scenario-plane-clean', {
+    RED.nodes.registerType('Scenario Plane: Clean', {
         category: 'FASAC',
         color: '#a6bbcf',
         inputs: 1,
@@ -22,7 +22,7 @@
     });
 </script>
 
-<script type="text/html" data-template-name="scenario-plane-clean">
+<script type="text/html" data-template-name="Scenario Plane: Clean">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -38,50 +38,67 @@
     <div class="form-row">
         <label for="node-input-jobTimeout"><i class="fa fa-tag"></i> Job Timeout</label>
         <input type="text" id="node-input-jobTimeout" placeholder="">
-        <div class="form-tips"><b>Tip:</b> Seconds to wait until the executed job is marked as timed out.</div>
     </div>
-
 </script>
 
-<script type="text/markdown" data-help-name="scenario-plane-clean">
-Creates a file.
+<script type="text/markdown" data-help-name="Scenario Plane: Clean">
+Bei der Ausführung des Moduls werden alle Ressourcen eines Namespaces gelöscht. 
+Dabei wird der Namespace verwendet, der in der Kubernetes-Konfiguration gesetzt ist.
+Wird in der Regel vor dem Start und nach Beendigung des Szenarios als Baustein eingefügt.
 
-### Inputs
+## **Eingänge**
 
-: msg.payload (dictionary):  A dictionary containing the parameter for creating the file.
+Der Baustein erwartet keine spezielle Datenstruktur am Eingang.
 
-### Outputs
+## **Ausgänge**
 
-1. Standard output
-: msg.payload (string) : The standard output of the executed ansible job.
+Die Ausgänge **Job Success** und **Job Failed** liefern das folgende Objekt:
 
-2. Job success
-: msg.payload (list) : A list of job results if the job was finished successfully.
+: msg.jobresult (array): Informationen über das ausgeführte Ansible Playbook zur Bereitstellung des Kubernetes-Workloads.
 
-3. Job failed (partially)
-: msg.payload (list) : A list of job results if the job failed (partially).
+### Job success
 
-### Details
+Dieser Ausgang wird aufgerufen, wenn die Ressourcen des Namespaces erfolgreich gelöscht werden konnten.
 
-The following attributes can be set via `msg.payload`:
+### Job failed
 
-```
-{
-    path: "/example/path"                       # required, must be an absoulte file path
-    mode: "0644",                               # optional, file mode
-    owner: "user",                              # optional, owner of the file
-    group: "usergroup",                         # optional, group of the file
-    content: "This is the file content."        # optional, plain text or base64-encoded string, default: false
-    isBase64Content: true | false               # optional, if true the content will be base64-decoded on the host
-}
-```
-If the file already exists, it will be overwritten with the given content value. To modify the file attributes use
-the "Modify File" node.
+Der Ausgang wird aufgerufen, wenn ein Fehler beim Löschen der Namespace-spezifischen Kubernetes-Ressourcen aufgetreten ist.
 
-### References
+### Standard Output
 
-Structure of a job response: https://docs.ansible.com/ansible-tower/3.2.3/html/towerapi/job_list.html#results
+: msg.payload (string) : Standardausgabe des Ansible-Prozesses, der den *Workload zum Löschen der Ressourcen* im Kubernetes-Cluster startet.
 
-Ansible copy module: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+## **Konfiguration**
+
+**Einstellungen Scenario Plane Clean**
+- *Name:* Bezeichnung des Knotens, der frei gewählt werden kann (optional)
+
+**Einstellungen AWX** 
+
+- *AWX Host:* cluster-interne URL zur AWX-API (Bsp: awx-service.awx.svc.cluster.local)
+- *AWX Port:* cluster-interner Port des AWX-API-Service (z.B. 80)
+- *AWX Token:* Nutzertoken für den Zugriff auf die Job Templates in AWX
+- *Use TLS:* verschlüsselte Verbindung zur AWX-API? (default: no)
+- *Verify Certificates:* Nur signierte Zertifikate erlaubt? (default: no)
+
+**Einstellungen Kubernetes**
+
+- *Kubernetes API URL:* Cluster-interne Adresse der Kubernetes-API-Schnittstelle  (z.B. https://172.16.30.169:6443)
+- *Kubernetes API Token:* Nutzer-Token für den Zugriff auf den Kubernetes-Cluster. Dieser Token muss alle erfoderlichen Rechte für den Namespace aufweisen,
+in dem das Szenario ausgeführt wird.
+- *Kubernetes Namespace:* Namespace, in dem der Kubernetes Workload installiert wird.
+- *Kubernetes Cluster Name:* Domänenname des Kubernetes Cluster. (default: cluster.local)
+- *Helm Repository URL:* Adresse des Helm Repository, der die Helm Charts zum Starten der 
+Kubernetes Workloads vorhält. (z.B. https://harbor.cyber/chartrepo/cyber-range)
+- *Verify certificates:* Soll der Zugriff auf die Kubernetes-API nur mit signierten Zertifikaten 
+erlaubt sein? (default: no)
+
+## **Referenzen**
+
+*Verwendetes Ansible-Playbook*
+https://github.com/spfuu/fasac/blob/main/ansible_playbooks/helm_delete.yaml
+
+*Struktur einer Ansible-Jobinformation:* 
+https://docs.ansible.com/ansible-tower/3.2.3/html/towerapi/job_list.html#results
 
 </script>
