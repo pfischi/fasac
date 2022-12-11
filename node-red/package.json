@@ -21,8 +21,8 @@
       "Metasploit: Create Meterpreter": "metasploit_create_meterpreter.js",
       "Scenario Plane: Prepare": "scenario-plane-prepare.js",
       "Scenario Plane: Clean": "scenario-plane-clean.js",
-      "workload-stop": "workload_stop_node.js",
-      "VM Start": "vm_start.js",
+      "Workload: Stop": "workload_stop_node.js",
+      "VM: Start": "vm_start.js",
       "MsfRpc: Config": "msfrpc-config.js",
       "MsfRpc: Listener Start": "msfrpc-listener-start.js",
       "MsfRpc: Session Command": "msfrpc-session-command.js"

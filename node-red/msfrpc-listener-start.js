@@ -17,7 +17,6 @@ module.exports = function(RED) {
                     if (!msg.payload || msg.payload.length === 0) {
                         throw new Error("No options given to create a 'exploit/multi/handler' listener on MsfRpc Server. payload set. The data field msg.payload is empty!")
                     }
-                    //msg.payload = msg.payload.toString() // sometime the user injects the timestamp of teh Inject Module
                     const msfrpc = new MsfRpc(this.msfrpcUri);
                     console.log(`Connecting to ${this.msfrpcUri}`);
 

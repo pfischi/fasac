@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('workload-stop',{
+    RED.nodes.registerType('Workload: Stop',{
         category: 'FASAC',
         color: '#a6bbcf',
         inputs: 1,
@@ -17,13 +17,21 @@
             name: {value: ""},
             awxService: {type:"awx-config", required: true},
             clusterService: {type:"cluster-config", required: true},
-            helmReleaseName: {value: "", required: false},
+            helmReleaseName: {
+                value: "",
+                required: true,
+                validate:function (value) {
+                    const pattern =  /(?=^.{0,23}$)^[a-z]([-a-z0-9]*[a-z0-9])$/g;
+                    const valid952HostnameRegex = new RegExp(pattern);
+                    return valid952HostnameRegex.test(value);
+                }
+            },
             jobTimeout: {required:true, value: 120, validate:RED.validators.number()},
         },
     });
 </script>
 
-<script type="text/html" data-template-name="workload-stop">
+<script type="text/html" data-template-name="Workload: Stop">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -37,8 +45,8 @@
         <input type="text" id="node-input-clusterService" placeholder="Cluster">
     </div>
     <div class="form-row">
-        <label for="node-input-helmReleaseName"><i class="fa fa-tag"></i> Helm Release Name</label>
-        <input type="text" id="node-input-helmReleaseName" placeholder="Helm Release Name">
+        <label for="node-input-helmReleaseName"><i class="fa fa-tag"></i>Workload to stop: Helm Release Name</label>
+        <input type="text" id="node-input-helmReleaseName" placeholder="">
     </div>
     <div class="form-row">
         <label for="node-input-jobTimeout"><i class="fa fa-tag"></i> Job Timeout</label>
@@ -48,44 +56,70 @@
     
 </script>
 
-<script type="text/markdown" data-help-name="workload-stop">
-Creates a file.
+<script type="text/markdown" data-help-name="Workload: Stop">
 
-### Inputs
+Bei der Ausführung des Moduls werden alle Ressourcen eines Kubernetes Workloads im Namespace gelöscht.
 
-: msg.payload (dictionary):  A dictionary containing the parameter for creating the file.
+## **Eingänge**
 
-### Outputs
+: msg.helmReleaseName (string): (optional) Helm Release Name des Workloads der gestoppt/gelöscht werden soll. 
+Dieser Wert kann auch über die Konfigurationsmaske des Moduls gesetzt werden. 
+Der Wert der Konfigurationsmaske hat Vorrang vor dem dynamasch übergbenen Wert.
 
-1. Standard output
-: msg.payload (string) : The standard output of the executed ansible job.
+## **Ausgänge**
 
-2. Job success
-: msg.payload (list) : A list of job results if the job was finished successfully.
+Die Ausgänge **Job Success** und **Job Failed** liefern das folgende Objekt:
 
-3. Job failed (partially)
-: msg.payload (list) : A list of job results if the job failed (partially).
+: msg.jobresult (array): Informationen über das ausgeführte Ansible Playbook zur Bereitstellung des Kubernetes-Workloads.
 
-### Details
+### Job success
 
-The following attributes can be set via `msg.payload`:
+Dieser Ausgang wird aufgerufen, wenn der Workload erfolgreich gelöscht wurde.
 
-```
-{
-    path: "/example/path"                       # required, must be an absoulte file path
-    mode: "0644",                               # optional, file mode
-    owner: "user",                              # optional, owner of the file
-    group: "usergroup",                         # optional, group of the file
-    content: "This is the file content."        # optional, plain text or base64-encoded string, default: false
-    isBase64Content: true | false               # optional, if true the content will be base64-decoded on the host
-}
-```
-If the file already exists, it will be overwritten with the given content value. To modify the file attributes use 
-the "Modify File" node.
+### Job failed
 
-### References
+Der Ausgang wird aufgerufen, wenn ein Fehler beim Löschen des Workloads aufgetreten ist.
 
-Structure of a job response: https://docs.ansible.com/ansible-tower/3.2.3/html/towerapi/job_list.html#results
+### Standard Output
 
-Ansible copy module: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+: msg.payload (string) : Standardausgabe des Ansible-Prozesses, der den *Workload zum Löschen des Workloads* im Kubernetes-Cluster startet.
+
+## **Konfiguration**
+
+**Einstellung Workload Stop**
+
+- *Name:* Bezeichnung des Knotens, der frei gewählt werden kann (optional).
+- *Workload to stop: Helm Release Name:* Name des zu löschenden Kubernetes Workloads (optional). Hat Vorrang gegenüber dem dynamisch übergebenen Wert *msg.helReleaseName*.
+- *Job Timout:* Nach Ablauf dieses Zeitwerts (in sek) wird der Start des Kubernetes Workloads 
+abgebrochen. Je nach Performance des Clusters und der Komplexität des Workloads ist an dieser Stelle 
+ein höherer Wert zu wählen.
+
+**Einstellungen AWX** 
+
+- *AWX Host:* cluster-interne URL zur AWX-API (Bsp: awx-service.awx.svc.cluster.local)
+- *AWX Port:* cluster-interner Port des AWX-API-Service (z.B. 80)
+- *AWX Token:* Nutzertoken für den Zugriff auf die Job Templates in AWX
+- *Use TLS:* verschlüsselte Verbindung zur AWX-API? (default: no)
+- *Verify Certificates:* Nur signierte Zertifikate erlaubt? (default: no)
+
+**Einstellungen Kubernetes**
+
+- *Kubernetes API URL:* Cluster-interne Adresse der Kubernetes-API-Schnittstelle  (z.B. https://172.16.30.169:6443)
+- *Kubernetes API Token:* Nutzer-Token für den Zugriff auf den Kubernetes-Cluster. Dieser Token muss alle erfoderlichen Rechte für den Namespace aufweisen,
+in dem das Szenario ausgeführt wird.
+- *Kubernetes Namespace:* Namespace, in dem der Kubernetes Workload installiert wird.
+- *Kubernetes Cluster Name:* Domänenname des Kubernetes Cluster. (default: cluster.local)
+- *Helm Repository URL:* Adresse des Helm Repository, der die Helm Charts zum Starten der 
+Kubernetes Workloads vorhält. (z.B. https://harbor.cyber/chartrepo/cyber-range)
+- *Verify certificates:* Soll der Zugriff auf die Kubernetes-API nur mit signierten Zertifikaten 
+erlaubt sein? (default: no)
+
+## **Referenzen**
+
+*Verwendetes Ansible-Playbook*
+https://github.com/spfuu/fasac/blob/main/ansible_playbooks/helm_delete.yml
+
+*Struktur einer Ansible-Jobinformation:* 
+https://docs.ansible.com/ansible-tower/3.2.3/html/towerapi/job_list.html#results
+
 </script>

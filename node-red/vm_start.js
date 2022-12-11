@@ -83,14 +83,13 @@ module.exports = function(RED) {
 
                     let msgStdoutResponse = {payload: stdout};
                     let allSuccessResponse, failedResponse;
+                    msg.helmReleaseName = this.helmReleaseName;
+                    msg.jobresult = jobs;
 
                     if (!allSuccess) {
                         node.status({fill: "yellow", shape: "dot", text: `Job finished with errors.`});
-                        msg.jobresult = jobs;
                         failedResponse = msg;
                     } else {
-                        msg.payload = this.helmReleaseName;
-                        msg.jobresult = jobs;
                         allSuccessResponse = msg
                         node.status({fill: "green", shape: "dot", text: `Job finished.`});
                     }
@@ -107,6 +106,6 @@ module.exports = function(RED) {
         }
     }
 
-    RED.nodes.registerType("vm-start", VMStartNode);
+    RED.nodes.registerType("VM: Start", VMStartNode);
 }
 
