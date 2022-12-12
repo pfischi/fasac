@@ -618,6 +618,14 @@ Nach dem Speichern erscheint ein Fenster mit dem Token sowie einem Refresh-Token
 
 Der erzeugte Token kann nun in allen Logik-Modulen verwendet werden, die einen Zugriff auf die AWX-API benötigen. Hier nocheinmal der Hinweis: Der Token bezieht sich auf die Ausführungsrechte für den Nuzter ```fasac```. Jedes hinterlegte JobTemplate muss einzeln die Berechtigungen für diesen Nutzer erhalten. Im Fehlerfall sollten die entsprechenden Nutzerrechte im JobTemplate und der hier erstellte Token überprüft werden.
 
+### Installation der FASAC-Module
+
+
+
+### Beschreibung der FASAC-Module
+
+Die Beschreibungen der FASAC-Module sind über die Hilfebeschreibung der einzelnen Module sowie [**HIER**](./node-red/README.md) einsehbar. 
+
 ## Kubevirt
 
 Kubevirt ist ein Addon für Kubernetes, das es ermöglicht, virtuelle Maschinen innerhalb des Clusters auszuführen. Für den FASAC-Workload *VM: Start* wird Kubevirt benötigt.
