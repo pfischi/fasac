@@ -14,18 +14,18 @@
   },
   "node-red": {
     "nodes": {
-      "awx-config": "awx-config.js",
-      "cluster-config": "cluster-config.js",
+      "awx-config": "awx_config.js",
+      "cluster-config": "cluster_config.js",
       "Mailserver: Start": "mailserver_start_node.js",
       "Metasploit: Start": "metasploit_start_node.js",
-      "Metasploit: Create Meterpreter": "metasploit_create_meterpreter.js",
-      "Scenario Plane: Prepare": "scenario-plane-prepare.js",
-      "Scenario Plane: Clean": "scenario-plane-clean.js",
+      "Metasploit: Create Meterpreter": "metasploit_create_meterpreter_node.js",
+      "Scenario Plane: Prepare": "scenario_plane_prepare_node.js",
+      "Scenario Plane: Clean": "scenario_plane_clean_node.js",
       "Workload: Stop": "workload_stop_node.js",
-      "VM: Start": "vm_start.js",
-      "MsfRpc: Config": "msfrpc-config.js",
-      "MsfRpc: Listener Start": "msfrpc-listener-start.js",
-      "MsfRpc: Session Command": "msfrpc-session-command.js"
+      "VM: Start": "vm_start_node.js",
+      "MsfRpc: Config": "msfrpc_config_node.js",
+      "MsfRpc: Listener Start": "msfrpc_listener_start_node.js",
+      "MsfRpc: Session Command": "msfrpc_session_command_node.js"
     }
   }
 }
