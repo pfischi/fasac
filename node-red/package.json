@@ -23,7 +23,7 @@
       "Scenario Plane: Clean": "scenario_plane_clean_node.js",
       "Workload: Stop": "workload_stop_node.js",
       "VM: Start": "vm_start_node.js",
-      "MsfRpc: Config": "msfrpc_config_node.js",
+      "MsfRpc: Config": "msfrpc_config.js",
       "MsfRpc: Listener Start": "msfrpc_listener_start_node.js",
       "MsfRpc: Session Command": "msfrpc_session_command_node.js"
     }
