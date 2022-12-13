@@ -1,5 +1,5 @@
 {
-  "name": "node-red-contrib-awx",
+  "name": "node-red-contrib-fasac",
   "version": "0.0.2",
   "dependencies": {
     "awx-sdk": "^1.0.2",
