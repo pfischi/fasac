@@ -24,15 +24,3 @@ helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs
 ```
 ### special for Node-Red
 kubectl apply -f kubernetes/node-red/pvc.yaml --namespace nodered
-
-
-für fasac-vm
-
-docker pull alpine:3.3
-docker tag alpine:3.3 harbor.cyber/cyber-range/alpine:3.3
-docker push harbor.cyber/cyber-range/alpine:3.3
-
-
-docker pull busybox &&
-docker tag busybox harbor.cyber/cyber-range/busybox &&
-docker push harbor.cyber/cyber-range/busybox

@@ -620,6 +620,62 @@ Der erzeugte Token kann nun in allen Logik-Modulen verwendet werden, die einen Z
 
 ### Installation der FASAC-Module
 
+#### Entwicklungsumgebung / -phase
+Während der Entwicklung ist es vorteilhaft, die Module möglichst einfach innerhalb von Node-RED zur Verfügung zu stellen. Die hier beschriebene Kubernetes-Umgebung setzt auf Dynamic Provisioning ,it Longhorn, was durch seine dynamisch erzeugten Volumes viele Vorteile bietet, jedoch in der Entwicklungsphase problematisch sein kann. So ist es nicht möglich, von außen auf die Daten des Volumes zuzugreifen und zu verändern. Das Node-RED-Deployment wird ebenfalls mit einem dynamischen Longhorn-Volume gestartet. In diesem Volume werden die persistenten Daten (u.a. die Node-Red-Module und ihre Einstellungen) gespeichert. In einem Longhorn-Volume lassen sich die Node-RED-Module nicht von außen nachträglich installieren oder verändern. Deshalb ist in diesem Szenario ein dynamisches Longhorn-Volume nicht zielführend. Als Alternative wird im Folgenden die Installation eines dynamischen NFS-Provisioner im Kubernetes-Cluster beschrieben, der ein externes NFS-verzeichnis mounted und darin ein dynamisches Volume für den Node-RED-Pod zur Verfügung stellt. Dieses NFS-Verzeichnis lässt sich dann extern ansprechen und z.B. als Projektpfad in einer Entwicklungsumgebung für Node-RED-Bausteine nutzen.
+
+**Installation des NFS-Provisioner im Cluster**
+
+Der folgende Aufruf installiert den NFS-Provisioner innerhalb des Kubernetes-Cluster. Die Werte ``--set nfs.server=172.16.30.99``und ``--set nfs.path=/home/fasac/nfs`` müssen entsprechend den Vorgaben des NFS-Servers abgeändert werden. Der NFS-Server muss im Netzwerk zur Verfügung gestellt werden und vom Kubernetes-Cluster erreichbar sein.
+
+``bash
+helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=172.16.30.99 --set nfs.path=/home/fasac/nfs --namespace kube-system
+``
+**Dynamic NFS PVC**
+
+Im Anschluss wird ein Persistent Volume Claim erzeugt, der den dynamischen Speicher vom NFS-Server anfordert. Auch hier müssen die Variablen ``nfs.io/storage-path`` und der Namespace (muss im Namespace des Node-RED-Workloads installiert werden) angepasst werden:
+
+```bash
+cat <<EOF | kubectl apply -f -
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nodered-pvc
+  namespace: nodered
+  annotations:  
+    nfs.io/storage-path: "/home/fasac/nfs"
+spec:
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+EOF
+```
+
+**Node-RED-Workload mit NFS-Volume**
+
+Damit Node-RED das NFS-Volume einbindet, müssen die Einstellungen des Helm Charts in ``values.yaml`` geändert werden. Das folgende Listing zeigt die entsprechenden Einstellungen:
+
+```yaml
+persistence:
+  enabled: true
+  storageClass: "nfs-client"
+  accessMode: ReadWriteOnce
+  size: 5Gi
+```
+
+Wurden die bereits beschriebenen Pfade und Werte für die Installation von Node-RED in Kubernetes genutzt, so kann mit dem folgenden Helm-Upgrade-Befehl die laufende Node-RED-Instanz im Cluster aktualisiert werden:
+
+```
+helm upgrade -f kubernetes/node-red/values.yaml nodered myrepo/node-red  --namespace nodered
+```
+Alternativ kann der bestehende Node-RED-Workload gelöscht und neu erstellt werden.
+
+**Hinweis**
+Werden Daten im NFS-Share geändert (z.B. neue oder abgeänderte Module), so muss der Node-RED-Pod neu gestartet werden, da Node-RED keine Möglichkeit bietet, die Daten *On-The-Fly* neu zuladen.
+
 
 
 ### Beschreibung der FASAC-Module
