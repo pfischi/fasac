@@ -630,15 +630,16 @@ Damit diese Methode funktioniert, müssen alle Kubernetes-Knoten im Cluster das 
 
 Der folgende Aufruf installiert den NFS-Provisioner innerhalb des Kubernetes-Cluster. Die Werte ``--set nfs.server=172.16.30.99``und ``--set nfs.path=/home/fasac/nfs`` müssen entsprechend den Vorgaben des NFS-Servers abgeändert werden. Der NFS-Server muss im Netzwerk zur Verfügung gestellt werden und vom Kubernetes-Cluster erreichbar sein.
 
-``bash
+```bash
 helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
 helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=172.16.30.99 --set nfs.path=/home/fasac/nfs --namespace kube-system
-``
+```
+
 **Dynamic NFS PVC**
 
 Im Anschluss wird ein Persistent Volume Claim erzeugt, der den dynamischen Speicher vom NFS-Server anfordert. Auch hier müssen die Variablen ``nfs.io/storage-path`` und der Namespace (muss im Namespace des Node-RED-Workloads installiert werden) angepasst werden:
 
-```bash
+```yaml
 cat <<EOF | kubectl apply -f -
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -679,7 +680,16 @@ Alternativ kann der bestehende Node-RED-Workload gelöscht und neu erstellt werd
 **Hinweis**
 Werden Daten im NFS-Share geändert (z.B. neue oder abgeänderte Module), so muss der Node-RED-Pod neu gestartet werden, da Node-RED keine Möglichkeit bietet, die Daten *On-The-Fly* neu zuladen.
 
+#### Produktivumgebung
 
+Des Weiteren ist die Installation der Module über den [offiziellen Weg von Node-RED](https://nodered.org/docs/creating-nodes/packaging) möglich. Dazu wird aus den FASAC-Module ein Paket erzeugt und auf NPM veröffentlicht. Dafür ist ein Account auf [NPM](https://www.npmjs.com) erforderlich. Nach der Veröffentlichung des Moduls lässt sich dieses im Palettenmanager von Node-RED finden und installieren. Zu beachten ist, dass bei jeder Code-Änderung der Versionszähler des Node-RED-Pakets erhöht werden muss, bevor es veröffentlicht werden kann.Ebenfalls ist es zwingend erforderlich, dass die Schlüsselwörter "node-red" sowie ```fasac```(für die Suche) in der [package.json](./node-red/package.json) gesetzt sind.
+
+Mit folgenden Befehlen wird das Node-RED-Modul ```node-red-contrib-fasac``` gepackt und auf npm veröffentlicht:
+```bash
+cd  code/node-red
+npm pack
+npm publish # user data required
+```
 
 ### Beschreibung der FASAC-Module
 
