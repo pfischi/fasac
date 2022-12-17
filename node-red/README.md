@@ -1,5 +1,5 @@
 
-Über die nachfolgenden Links sind die Beschreibungen der Node-RED-Module erreichbar. Die Bausteine sind Teil des Frameworks FASAC, das für eine automatische Simulaion von APT-Angriffe konzipiert wurde. Eine komplette Beschreibung von FASAC kann im [Github-Verzeichnusses des Projekts](https://github.com/spfuu/fasac) abgefurfen werden.
+Über die nachfolgenden Links sind die Beschreibungen der Node-RED-Module erreichbar. Die Bausteine sind Teil des Frameworks FASAC, das für eine automatische Simulaion von APT-Angriffe konzipiert wurde. Eine komplette Beschreibung von FASAC kann im [Github-Verzeichnis des Projekts](https://github.com/spfuu/fasac) abgefurfen werden.
 
 
 - [Mailserver: Start](https://github.com/spfuu/fasac/tree/main/node-red/manuals/mailserver_start_node.md)
