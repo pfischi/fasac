@@ -618,9 +618,13 @@ Nach dem Speichern erscheint ein Fenster mit dem Token sowie einem Refresh-Token
 
 Der erzeugte Token kann nun in allen Logik-Modulen verwendet werden, die einen Zugriff auf die AWX-API benötigen. Hier nocheinmal der Hinweis: Der Token bezieht sich auf die Ausführungsrechte für den Nuzter ```fasac```. Jedes hinterlegte JobTemplate muss einzeln die Berechtigungen für diesen Nutzer erhalten. Im Fehlerfall sollten die entsprechenden Nutzerrechte im JobTemplate und der hier erstellte Token überprüft werden.
 
-### Installation der FASAC-Module
+### Beschreibung der FASAC-Module
 
-#### Entwicklungsumgebung / -phase
+Die Beschreibungen der FASAC-Module sind über die Hilfebeschreibung der einzelnen Module sowie [**HIER**](./node-red/README.md) einsehbar. 
+
+## Installation der FASAC-Module
+
+### Entwicklungsumgebung / -phase
 Während der Entwicklung ist es vorteilhaft, die Module möglichst einfach innerhalb von Node-RED zur Verfügung zu stellen. Die hier beschriebene Kubernetes-Umgebung setzt auf Dynamic Provisioning ,it Longhorn, was durch seine dynamisch erzeugten Volumes viele Vorteile bietet, jedoch in der Entwicklungsphase problematisch sein kann. So ist es nicht möglich, von außen auf die Daten des Volumes zuzugreifen und zu verändern. Das Node-RED-Deployment wird ebenfalls mit einem dynamischen Longhorn-Volume gestartet. In diesem Volume werden die persistenten Daten (u.a. die Node-Red-Module und ihre Einstellungen) gespeichert. In einem Longhorn-Volume lassen sich die Node-RED-Module nicht von außen nachträglich installieren oder verändern. Deshalb ist in diesem Szenario ein dynamisches Longhorn-Volume nicht zielführend. Als Alternative wird im Folgenden die Installation eines dynamischen NFS-Provisioner im Kubernetes-Cluster beschrieben, der ein externes NFS-Verzeichnis mounted und darin ein dynamisches Volume für den Node-RED-Pod zur Verfügung stellt. Dieses NFS-Verzeichnis lässt sich dann extern ansprechen und z.B. als Projektpfad in einer Entwicklungsumgebung für Node-RED-Bausteine nutzen.
 
 **Achtung**
@@ -680,7 +684,7 @@ Alternativ kann der bestehende Node-RED-Workload gelöscht und neu erstellt werd
 **Hinweis**
 Werden Daten im NFS-Share geändert (z.B. neue oder abgeänderte Module), so muss der Node-RED-Pod neu gestartet werden, da Node-RED keine Möglichkeit bietet, die Daten *On-The-Fly* neu zuladen.
 
-#### Produktivumgebung
+### Produktivumgebung
 
 Des Weiteren ist die Installation der Module über den [offiziellen Weg von Node-RED](https://nodered.org/docs/creating-nodes/packaging) möglich. Dazu wird aus den FASAC-Module ein Paket erzeugt und auf NPM veröffentlicht. Dafür ist ein Account auf [NPM](https://www.npmjs.com) erforderlich. Nach der Veröffentlichung des Moduls lässt sich dieses im Palettenmanager von Node-RED finden und installieren. Zu beachten ist, dass bei jeder Code-Änderung der Versionszähler des Node-RED-Pakets in der [package.json](./node-red/package.json) erhöht werden muss, bevor es veröffentlicht werden kann.Ebenfalls ist es zwingend erforderlich, dass die Schlüsselwörter "node-red" sowie ```fasac```(für die Suche) in der [package.json](./node-red/package.json) gesetzt sind.
 
@@ -690,10 +694,6 @@ cd  code/node-red
 npm pack
 npm publish # user data required
 ```
-
-### Beschreibung der FASAC-Module
-
-Die Beschreibungen der FASAC-Module sind über die Hilfebeschreibung der einzelnen Module sowie [**HIER**](./node-red/README.md) einsehbar. 
 
 ## Kubevirt
 
