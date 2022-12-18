@@ -486,18 +486,6 @@ Der Inventory-Name wird von den Node-Red-Logiken genutzt, um das entsprechende I
 Folgende Job-Template-Bezeichnungen (Beachtung der Groß- und Kleinschreibung!) und Playbook-Zuordnungen nutzt der PoC (und die Node-Red-Logikmodule) mit Stand 26.10.22:
 
 ```yaml
-JobTemplate name: Create Directory
-Playbook:         create_directory.yml
-
-JobTemplate name: Modify Directory
-Playbook:         modify_directory.yml
-
-JobTemplate name: Delete Directory
-Playbook:         delete_directory.yml
-
-JobTemplate name: Create File
-Playbook:         create_file.yml
-
 JobTemplate name: Modify File
 Playbook:         modify_file.yml
 

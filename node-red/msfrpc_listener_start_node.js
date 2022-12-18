@@ -1,4 +1,4 @@
-const MsfRpc  = require("awx-nodered/msfrpc.js")
+const MsfRpc  = require("./msfrpc.js")
 
 module.exports = function(RED) {
     function MsfRpcStartListenerNode(config) {
