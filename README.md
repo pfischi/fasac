@@ -681,6 +681,11 @@ helm upgrade -f kubernetes/node-red/values.yaml nodered myrepo/node-red  --names
 ```
 Alternativ kann der bestehende Node-RED-Workload gelöscht und neu erstellt werden.
 
+Im NFS-Share wird folgende Ordnerstruktur angelegt.
+```bash
+
+```
+
 **Hinweis**
 Werden Daten im NFS-Share geändert (z.B. neue oder abgeänderte Module), so muss der Node-RED-Pod neu gestartet werden, da Node-RED keine Möglichkeit bietet, die Daten *On-The-Fly* neu zuladen.
 
