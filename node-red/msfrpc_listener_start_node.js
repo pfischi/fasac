@@ -53,21 +53,20 @@ module.exports = function(RED) {
                     var meterpreterSession;
                     const tick = 5;
 
-                    const counter = Math.ceil(this.meterpreterWaitTime / tick);
-                    
+                    const counter = Math.ceil(this.meterpreterWaitTime / tick)
 
                     node.status({fill: "yellow", shape: "dot", text: "Waiting for a Meterpreter connection ..."});
                     for (var i = counter; i > 0; i--) {
-                        const sessions = await msfrpc.session.list()
+
+                        const sessions = await msfrpc.session.list();
+
                         if (sessions.length === 0) {
                             continue;
                         }
                         //console.log(sessions)
                         var found = false;
-                        // only connect to a meterpreter started by the current Meterpreter listener
 
                         for (let [key, values] of Object.entries(sessions)) {
-                            console.log(sessions)
                             if (this.meterpreterSessionOnlyConnect) {
                                 if (values.exploit_uuid === job_uuid) {
                                     meterpreterSession = values;
