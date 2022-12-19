@@ -1,5 +1,3 @@
-//const MsfRpc = require('./msfrpc.mjs');
-
 module.exports = function(RED) {
 function MsfRpcSessionCommandNode(config) {
         try {
@@ -12,6 +10,7 @@ function MsfRpcSessionCommandNode(config) {
 
             node.on('input', async function (msg) {
                 const MsfRpc = await import('./msfrpc.mjs');
+
                 try {
                     if ("meterpreter" in msg) {
                         if (! "id" in msg.meterpreter) {
@@ -28,7 +27,7 @@ function MsfRpcSessionCommandNode(config) {
                         throw new Error("No Meterpreter command not configured.")
                     }
 
-                    const msfrpc = new MsfRpc(this.msfrpcUri);
+                    const msfrpc = new MsfRpc.default(this.msfrpcUri);
                     console.log(`Connecting to ${this.msfrpcUri}`);
 
                     node.status({fill: "yellow", shape: "dot", text: "Waiting to connect to msfrpc server ..."});

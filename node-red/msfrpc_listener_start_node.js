@@ -1,5 +1,3 @@
-// const MsfRpc = require('./msfrpc.mjs');
-
 module.exports = function(RED) {
     function MsfRpcStartListenerNode(config) {
         try {
