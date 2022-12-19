@@ -1,3 +1,5 @@
+// const MsfRpc = require('./msfrpc.mjs');
+
 module.exports = function(RED) {
     function MsfRpcStartListenerNode(config) {
         try {
@@ -9,14 +11,14 @@ module.exports = function(RED) {
             const node = this;
 
             node.on('input', async function(msg) {
-                const MsfRpc = await import('./msfrpc.js');
+                const MsfRpc = await import('./msfrpc.mjs');
                 try {
                     const sleep = ms => new Promise(r => setTimeout(r, ms));
 
                     if (!msg.payload || msg.payload.length === 0) {
                         throw new Error("No options given to create a 'exploit/multi/handler' listener on MsfRpc Server. payload set. The data field msg.payload is empty!")
                     }
-                    const msfrpc = new MsfRpc(this.msfrpcUri);
+                    const msfrpc = new MsfRpc.default(this.msfrpcUri);
                     console.log(`Connecting to ${this.msfrpcUri}`);
 
                     node.status({fill: "yellow", shape: "dot", text: "Waiting to connect to msfrpc server ..."});

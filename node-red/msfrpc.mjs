@@ -1,4 +1,4 @@
-import decamelize from 'decamelize';
+
 /**
  * Allow self-signed ssl sertificates.
  */
@@ -7,11 +7,18 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 /**
  * Load dependencies.
  */
-const URL = require('url');
+import URL from "url";
+import decamelize from "decamelize";
+import request from "request";
+import MsgPack5 from "msgpack5";
+import Promise from "bluebird"
 
-const request = require('request');
-const MsgPack5 = require('msgpack5');
-const Promise = require('bluebird');
+
+//const URL = import('url');
+//const decamelize = import('decamelize');
+//const request = import('request');
+//const MsgPack5 = import('msgpack5');
+//const Promise = import('bluebird');
 
 /**
  * Instance MsgPack5.
@@ -22,7 +29,9 @@ const msgpack = MsgPack5();
  * @constructor constructor(uri, options)
  * @constructor constructor(options)
  */
-module.exports = class MsfRpc {
+
+export default class MsfRpc {
+//module.exports = class MsfRpc {
     
   /**
    * MsfRpc constructor.

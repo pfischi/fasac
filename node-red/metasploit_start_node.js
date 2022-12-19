@@ -1,6 +1,5 @@
 const awxConnector  = require("./awx-connector.js")
 
-
 module.exports = function(RED) {
     function MetasploitStartNode(config) {
         try {

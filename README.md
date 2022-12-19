@@ -824,7 +824,7 @@ Im NFS-Share wird folgende Ordnerstruktur angelegt:
         |-- node-red-contrib-chronos
         |-- node-red-contrib-fasac # <-- hierhin kommt das Projektverzeichnis der Node-RED-Bausteine
 ```
-Der [Projektpfad](./node-red/) für die Node-RED-Bausteine muss an die im Listing markierte Stelle kopiert werden, damit sie von Node-RED geladen werden kann.
+Der [Projektpfad](./node-red/) für die Node-RED-Bausteine muss an die im Listing markierte Stelle kopiert werden, damit sie von Node-RED geladen werden kann. **ACHTUNG**: Werden in Node-RED über den Palettenmanager Module installiert, wird der komplette *node_modules*-Ordner von Node-RED gelöscht. Der Projektpfad sollte also nicht direkt auf den NFS-Share verweisen, sondern dessen Inhalt in das beschriebene Verzeichnis kopiert werden. Dies kann z.B. als Anweisung vor jedem Bau- oder Debug-Prozess in der Entwicklungsumgebung umgesetzt werden.
 
 Anders als in der nachfolgend beschriebenden Methode (hier wird dies von Node-RED bei der Installation durchgeführt) müssen die Javascriot-Abhängigkeiten der FASAC-Module händisch installiert werden. Alle zu installierenden Pakete sind in der Datei [package.json](./node-red/package.json) aufgeführt. Um die Abhängigkeiten lokal (nicht global) im Projektverzeichnis zu installieren, müssen folgende Befehle ausgeführt werden:
 
