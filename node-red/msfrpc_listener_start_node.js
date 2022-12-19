@@ -1,5 +1,3 @@
-const MsfRpc = await import('./msfrpc.js');
-
 module.exports = function(RED) {
     function MsfRpcStartListenerNode(config) {
         try {
@@ -11,6 +9,7 @@ module.exports = function(RED) {
             const node = this;
 
             node.on('input', async function(msg) {
+                const MsfRpc = await import('./msfrpc.js');
                 try {
                     const sleep = ms => new Promise(r => setTimeout(r, ms));
 

@@ -1131,3 +1131,10 @@ docker push harbor.cyber/cyber-range/kinetic-server-cloudimg-amd64-custom
 ```
 
 Das erstelle Docker-Image kann nun für die Erstellung von VMs mit KubeVirt genutzt werden (z.B. im FASAC-Modul *VM Start*).
+
+
+## Troubleshooting
+
+### Pod startet nicht und verbleibt im Status *ContainerCreating*
+
+Das Problem tritt in Verbindung mit dem Mounten von Longhorn-Volumes und den Multipath-Einstellungen des Betriebssystems des Kubernetes-Knotens auf. Entsprechende Fehlermeldungen werden im Cluster-Log ausgegeben. Ein genaue Beschreibung des Fehlers und ein Workaround ist unter der URL https://longhorn.io/kb/troubleshooting-volume-with-multipath/ erreichbar.

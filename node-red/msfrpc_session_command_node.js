@@ -1,5 +1,3 @@
-const MsfRpc = await import('./msfrpc.js');
-
 module.exports = function(RED) {
 function MsfRpcSessionCommandNode(config) {
         try {
@@ -12,6 +10,7 @@ function MsfRpcSessionCommandNode(config) {
 
             node.on('input', async function (msg) {
                 try {
+                    const MsfRpc = await import('./msfrpc.js');
                     if ("meterpreter" in msg) {
                         if (! "id" in msg.meterpreter) {
                             throw new Error("No key 'id' found in msg.meterpreter !")
