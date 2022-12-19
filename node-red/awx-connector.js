@@ -1,7 +1,6 @@
 const axios = require('axios').default;
 const errorCodes  = require("./awx-error.js")
 
-
 var awxConnector = (function () {
     var publicAPIs = {};
 
