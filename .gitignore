@@ -1,1 +1,5 @@
 thesis-code.code-workspace
+node-red/.idea/.gitignore
+node-red/.idea/modules.xml
+node-red/.idea/node-red.iml
+node-red/.idea/vcs.xml
