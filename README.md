@@ -1,6 +1,71 @@
 Das folgende Dokument beschreibt die Installation der Kubernetes-Umgebung sowie der Softwarekomponenten von FASAC. Alle Pfade und Kommandobefehle beziehen sich auf den aktuellen Pfad dieses Dokuments und werden, wenn nichts anderes angemerkt ist, *relativ* angegeben.
 
+## Inhaltsverzeichnis
+
+  - [Virtuelle Maschinen für Harvester](#section-id-3)
+    - [Hardwareressourcen](#section-id-5)
+    - [Image](#section-id-19)
+    - [Master-Knoten](#section-id-24)
+    - [Slave-Knoten](#section-id-32)
+    - [Ersteinrichtung](#section-id-38)
+    - [Bereitstellung des Cloud-Image](#section-id-57)
+    - [Cloud Config Template](#section-id-65)
+  - [Rancher](#section-id-94)
+    - [Installation](#section-id-98)
+  - [Integration von Harvester](#section-id-118)
+  - [Einrichtung des Kubernetes-Cluster](#section-id-132)
+    - [Pool-Konfiguration](#section-id-134)
+    - [Kubectl](#section-id-214)
+  - [Longorn](#section-id-234)
+  - [Helm](#section-id-267)
+  - [Harbor](#section-id-277)
+    - [Installation](#section-id-279)
+    - [Harbor Registry Certificate](#section-id-324)
+      - [Download der Registry-CA](#section-id-328)
+      - [Bereitstellung der CA auf Entwicklersystem](#section-id-334)
+      - [Bereitstellung für die Kubernetes Knoten](#section-id-346)
+  - [Zugriff auf die Harbor Docker Registry und Helm Registry](#section-id-382)
+  - [AWX](#section-id-397)
+    - [Installation](#section-id-401)
+      - [Ausrollen im Kubernetes-Cluster](#section-id-405)
+    - [Einrichtung](#section-id-422)
+    - [Nutzereinrichtung](#section-id-437)
+    - [Project und Git-Zugang](#section-id-448)
+    - [Inventory](#section-id-465)
+    - [Job Templates](#section-id-479)
+    - [Custom Execution Environment](#section-id-531)
+  - [Node-Red](#section-id-560)
+    - [Installation](#section-id-564)
+      - [Vorbereitung Helm Chart](#section-id-565)
+      - [Docker Images](#section-id-572)
+      - [Ausrollen im Kubernetes-Cluster](#section-id-586)
+    - [Token für AWX-Zugriff](#section-id-603)
+    - [Beschreibung der FASAC-Module](#section-id-621)
+  - [Installation der FASAC-Module](#section-id-625)
+    - [Entwicklungsumgebung / -phase](#section-id-627)
+    - [Produktivumgebung](#section-id-708)
+  - [Kubevirt](#section-id-719)
+    - [Installation](#section-id-723)
+    - [Support für Emulation](#section-id-734)
+  - [Vorbereitung für FASAC-Szenarien](#section-id-744)
+    - [Szenario-Namespace](#section-id-748)
+    - [Serviceaccount für den Namespace](#section-id-756)
+    - [Netzwerkrichtlinie](#section-id-864)
+    - [Labels für die Kontrollschicht](#section-id-883)
+  - [Kubernetes Workloads für FASAC](#section-id-892)
+    - [fasac-control](#section-id-896)
+    - [fasac-vm](#section-id-900)
+    - [Metasploit und Msfvenom](#section-id-904)
+    - [Mailserver](#section-id-919)
+  - [Bereitstellung und Anpassungen von Cloud-Images](#section-id-933)
+    - [Herunterladen und Bearbeiten des Cloud-Images](#section-id-937)
+    - [Umwandlung in ein Docker-Image](#section-id-950)
+
+<div id='section-id-3'/>
+
 ## Virtuelle Maschinen für Harvester
+
+<div id='section-id-5'/>
 
 ### Hardwareressourcen
 
@@ -16,10 +81,14 @@ Bei der Konfiguration der CPU ist zwingend die Option "Hardwarevirtualisierung" 
 
 Der Netzwerkbereich wurde auf 172.16.30.0/24 festgelegt mit der *default*-Route 172.16.30.1. 
 
+<div id='section-id-19'/>
+
 ### Image
 
 Für den PoC wurde die Harvester-Version 1.0.3 verwendet und kann in [Github](https://releases.rancher.com/harvester/v1.1.0/harvester-v1.1.0-amd64.iso) (Stand 26.10.22) heruntergeladen werden.
 
+
+<div id='section-id-24'/>
 
 ### Master-Knoten
 
@@ -29,11 +98,15 @@ Die erste installierte Harvester-Maschine ist gleichzeitig der Master-Knoten des
 <img src="manual/harvester_ready.png" width="800">
 
 
+<div id='section-id-32'/>
+
 ### Slave-Knoten
 
 Bei der Installation der *Slave*-Harvester-Knoten wird die Option *Join Cluster* gewählt. Anschließend muss die VIP-Adresse und der Token der Master-Installation von Harvester eingetragen werden. Der Slave-Knoten registriert sich dann automatisch am Master. Bei einer erfolgreichen Installation zeigt das Terminal die folgende Ausgabe:
 
 <img src="manual/harvester2_ready.png" width="800">
+
+<div id='section-id-38'/>
 
 ### Ersteinrichtung
 
@@ -54,6 +127,8 @@ Danach wird ein Standardnetzwerk für die Nutzung durch die virtuellen Maschinen
 
 Dieses Netzwerk steht später als Option in Rancher für das zu wählende Netzwerk zur Verfügung.
 
+<div id='section-id-57'/>
+
 ### Bereitstellung des Cloud-Image
 
 Für die spätere Installation der VMs für Kubernetes-Knoten wird ein entsprechendes Betriebssystemabbild benötigt. Der PoC nutzt hier die das Cloud-Image von Ubuntu in der Version 22.10 (*Kinetic Kudu*). Das Image kann [hier](https://cloud-images.ubuntu.com/kinetic/current/kinetic-server-cloudimg-amd64.img) (Stand: 26.10.22) heruntergeladen werden. 
@@ -61,6 +136,8 @@ Für die spätere Installation der VMs für Kubernetes-Knoten wird ein entsprech
 Über den Menüpunkt *Images* kann das Cloud-Image per File-Upload-Dialog oder einer URL zum gewünschten Betriebssystemabild dem Harvester-Cluster verfügbar gemacht werden. Das Image steht anschließend als Auswahloption (auch in Rancher) bei der Installation von VMs zur Verfügung.
 
 <img src="manual/harvester_image.png" width="800">
+
+<div id='section-id-65'/>
 
 ### Cloud Config Template
 
@@ -91,9 +168,13 @@ packages:
 
 <img src="manual/harvester_cloud_template.png" width="800">
 
+<div id='section-id-94'/>
+
 ## Rancher
 
 Rancher wird auf einem beliebigen Host des Netzwerks gestartet. Dazu wird eine aktuelle Docker-Installation auf dem System benötigt. Rancher wird zum Erstellen und Verwalten des HA-Kubernetes-Clusters benötigt.
+
+<div id='section-id-98'/>
 
 ### Installation
 
@@ -115,7 +196,9 @@ docker logs  <CONTAINER ID>  2>&1 | grep "Bootstrap Password:"
 ```
 Nach Eingabe des Bootstrap-Passworts kann das eigentliche Administrationspasswort gesetzt werden.
 
-## Integration von Harvester
+<div id='section-id-118'/>
+
+### Integration von Harvester
 
 Zur Integration des Harvester-Cluster in die Rancher-Oberfläche wird in Rancher ein Authentifizierungstoken erzeugt, dass dann in Harvester-Verwaltungsoberfläche hinterlegt wird. Die entsprechende Einstellung wird über den linken oberen Menüpunk *Virtualization Management* erreicht. Dort wird der Punkt *Import Existing* gewählt. Nach der Auswahl eines (beliebigen) Namens für den zu importierenden Harvester-Cluster wird eine Authentifizierungs-URL erzeugt.
 
@@ -129,9 +212,13 @@ Nach wenigen Minuten erscheint der Harvester-Cluster dann in der Oberfläche von
 
 <img src="manual/rancher_harvester_ready.png" width="800">
 
-## Einrichtung des Kubernetes-Cluster
+<div id='section-id-132'/>
 
-### Pool-Konfiguration
+### Einrichtung des Kubernetes-Cluster
+
+<div id='section-id-134'/>
+
+#### Pool-Konfiguration
 
 Die Installation des HA-Kubernetes-Clusters wird unter dem Menüpunkt *Cluster Management* vorgenommen. Dort ist bereits der *local* Kubernetes-Cluster der Rancher-Installation gelistet. Die Installation des Clusters wird über *Create* gestartet. Im anschließendem Auswahlfenster wird die Option *Harvester* mit der Auswahl *RKE2/K3S* gewählt.
 
@@ -211,7 +298,9 @@ Sind alle Pool-Werte gesetzt, wird Installationsvorgang des Cluster über *Creat
 
 <img src="manual/rancher_cluster_ready.png" width="800">
 
-### Kubectl
+<div id='section-id-214'/>
+
+#### Kubectl
 
 Für die Steuerung des Kubernetes-Cluster wird neben Rancher das Kommandozeilenprogramm ```kubectl```verwendet. ```kubectl``` wird auf einem Entwicklungsrechner mit Zugang zum Netzwerk ```172.16.30.0/24``` installiert. Für Linux werden folgende Befehle auf der Kommandozeile ausgeführt:
 
@@ -230,6 +319,8 @@ Diese Datei wird dann unter dem Pfad ```$USER/.kube/config``` gespeichert. Der Z
 ```bash
 kubectl get ns
 ```
+
+<div id='section-id-234'/>
 
 ## Longorn
 
@@ -264,6 +355,8 @@ Im letzten Schritt wird der vorinstallierte Harvester Storage Provisioner als ``
 
 Nach dem Longhorn installiert wurde, erscheint ein Menüpunkt im Cluster-Management *Longhorn*. Unter *Settings --> General* wird in der Spalte *Kubernetes Taint Toleration* der Wert ```node=longhorn:NoSchedule``` gesetzt.
 
+<div id='section-id-267'/>
+
 ## Helm
 
 Die Kubernetes-Deployments werden typischerweise als dynamisches Helm Template installiert. Dafür wird lokal das Kommandozeilenprogramm ```helm``` benötigt. Mit den folgenden Befehlen wird Helm installiert:
@@ -274,7 +367,11 @@ chmod 700 get_helm.sh
 ./get_helm.sh
 ```
 
+<div id='section-id-277'/>
+
 ## Harbor
+
+<div id='section-id-279'/>
 
 ### Installation
 Im nächsten Schritt wird die Private Docker Registry *Harbor* installiert. Sie stellt die Docker-Images und Helm-Templates die Kubernetes Deployments zur Verfügung. Zuerst wird ein Namespace für Harbor im Cluster erstellt:
@@ -321,15 +418,21 @@ Dieser Nutzer wird dem Projekt ```cyber-range``` zugeordnet. Unter der Einstellu
 
 <img src="manual/harbor_user.png" width="800">
 
+<div id='section-id-324'/>
+
 ### Harbor Registry Certificate
 
 Jede Docker-Installation, sei es auf dem Entwicklungsrechner oder auf den Knoten der Kubernetes-Knoten, benötigt den Zugriff auf eine Registry, die als vertrauenswürdig eingestuft wird. Dazu muss die ```CA``` der erstellten Registry ```cyber-range``` auf die entsprechenden, auf die Registry zugreifenden System verteilt werden.
+
+<div id='section-id-328'/>
 
 #### Download der Registry-CA
 
 Die ```CA``` der Registry lässt sich über den Menüpunkt ```Project --> cyber-range --> Registry Certificate``` herunterladen. Die für den PoC verwendete ```CA``` ist unter dem Pfad ```kubernetes/harbor/ca.crt``` bereitgestellt.
 
 <img src="manual/harbor_registry_ca.png" width="800">
+
+<div id='section-id-334'/>
 
 #### Bereitstellung der CA auf Entwicklersystem
 
@@ -342,6 +445,8 @@ sudo update-ca-certificates --fresh
 sudo mkdir -p /etc/docker/certs.d/harbor.cyber
 sudo cp kubernetes/harbor/ca.crt /etc/docker/certs.d/harbor.cyber
 ```
+
+<div id='section-id-346'/>
 
 #### Bereitstellung für die Kubernetes Knoten
 
@@ -379,6 +484,8 @@ ca-certs:
 
 Der Eintrag bewirkt nach dem Speichern, dass die beiden betroffenen Pools komplett neu ausgerollt werden. Da es sich um ein ```Rolling Update```handelt, kann der Vorgang bis zu einer Stunde dauern. Alle Pods von Harbor müssen sich wieder im Zustand *Active* befinden. Eventuell ist es notwendig, die Harbor Pods *Redis* und *Database* zu löschen. Das Harbor Deployment erstellt diese dann umgehend neu. **Zu beachten** ist, dass sich die IP-Adressen ändern und der DNS-Eintrag für Harbor entsprechend angepasst werden muss.
 
+<div id='section-id-382'/>
+
 ## Zugriff auf die Harbor Docker Registry und Helm Registry
 
 Mit dem Nutzer ```cyb``` kann nun auf die Harbor Registry zugegriffen werden. Dazu loogt sich der Nutzer über die Kommandozeile bei Harbor ein:
@@ -394,13 +501,19 @@ helm repo add --username=cyb --password=Nqn9PuQ2bndXeSv myrepo https://harbor.cy
 helm repo update
 helm repo list # muss myrepo als Eintrag anzeigen
 ```
+<div id='section-id-397'/>
+
 ## AWX
 
 AWX ist eine serverbasierte Anwendung, mit der *Ansible Playbooks* verwaltet und ausgeführt werden können. AWX ist über eine Weboberfläche und über ein REST-API ansteuerbar.
 
+<div id='section-id-401'/>
+
 ### Installation
 
 Die Installation von AWX erfolgt über den AWX Operator, der über ein Helm Template im Kubernetes Cluster installiert wird. In [Github](https://github.com/ansible/awx-operator) findet sich eine detaillierte Beschreibung der einzelnen Konfigurationsmöglichkeiten für die Installation. Unter ```kubernetes/awx/values.yaml``` sind die für den PoC verwendeten Parameter hinterlegt.
+
+<div id='section-id-405'/>
 
 #### Ausrollen im Kubernetes-Cluster
 
@@ -419,6 +532,8 @@ Die Installation ist vollendet, wenn folgende Pods erzeugt wurden (das dauert u.
 
 Der Ingress für AWX wurde in der Datei ```kubernetes/awx/values.yaml``` auf ```awx.cyber``` festgelegt. Der Webservice ist dadurch unter ```https://awx.cyber``` erreichbar. Auch hier muss ein DNS-Eintrag auf eine beliebige Kubernetes-Worker-IP gesetzt werden.
 
+<div id='section-id-422'/>
+
 ### Einrichtung
 
 Für den Zugriff auf die Webseite werden Zugangsdaten benötigt. Diese werden durch AWX automatisch erzeugt. Über die Kommandozeile kann das entsprechende *Kubernetes Secret* abgefragt werden:
@@ -434,6 +549,8 @@ user:     admin
 password: oapADvzj9suAeywM9jZw1A5UF6n2AUZP
 ```
 
+<div id='section-id-437'/>
+
 ### Nutzereinrichtung
 
 Für den Zugriff von FASAC auf die API von AWX wird ein neuer Nutzer eingerichtet. Dazu wird unter *Access --> Users* ein neuer Benutzeraccount vom Typ *normal* angelegt. Der PoC nutzt dabei die folgenden Einstellungen:
@@ -444,6 +561,8 @@ password: J4kZhwzRYgR9jq8
 ```
 
 <img src="manual/awx_user.png" width="800">
+
+<div id='section-id-448'/>
 
 ### Project und Git-Zugang
 
@@ -462,6 +581,8 @@ Nach dem Speichern der Einstellungen synchronisiert sich das Projekt mit dem reg
 
 <img src="manual/awx_project_ready.png" width="800">
 
+<div id='section-id-465'/>
+
 ### Inventory
 
 Mit den bisher getätigten Einstellungen kann nun ein Inventory angelegt werden, welches die Ansible Playbooks verwaltet. Dazu wird unter *Resources --> Inventories* ein neuer Eintrag von Typ *inventory* angelegt. 
@@ -475,6 +596,8 @@ Danach wird dem erstellten Nutzer die Rechte zur Nutzung diese Inventories einge
 Im anschließendem Auswahldialog werden dem Nutzer die Rechte *Read* und *Use* bei der Benutzung des Inventory gegeben.
 
 <img src="manual/awx_inventory_user_rights.png" width="800">
+
+<div id='section-id-479'/>
 
 ### Job Templates
 
@@ -516,6 +639,8 @@ Im PoC sind mit Stand 26.10.2022 folgende Job Templates in AWX integriert:
 
 <img src="manual/awx_jobtemplate_all.png" width="800">
 
+<div id='section-id-531'/>
+
 ### Custom Execution Environment
 
 AWX startet für jeden auszuführenden Job einen Container, der die notwendigen Tools für die Ausführung der einzelnen Tasks beinhaltet. Dieser Container ist wird bei der Installation von AWX automatisch mit ausgelifert. Für einige der Ansible Module, oder bei nutzerseitigen Anpassungen, muss der Container angepasst werden. Dafür stellt AWX ein Paket mit dem Namen ```ansible-builder``` bereit, mit dem ein angepasster Container mit einfachen Mitteln erstellt werden kann. Unter ```awx-ee/ansible-builder``` ist das entsprechende Paket für FASAC bereitgestellt. In der Datei ```awx-ee/ansible-builder/execution-environment.yml``` werden zusätzliche Inhalte für den Container angegeben. Für FASAC wird das Kommandozeilenprogramm ```helm``` benötigt. Der entsprechende Eintrag für das Herunterladen und Installieren von Helm ist in der ```execution-environment.yml``` eingetragen. 
@@ -545,17 +670,25 @@ In jedem Job Template muss nun die EE-Einstellung abgeändert werden. Konkret be
 
 <img src="manual/awx_custom_ee_jobs.png" width="800">
 
+<div id='section-id-560'/>
+
 ## Node-Red
 
 In den nächsten Schritten wird der grafische Logikeditor Node-Red installiert. Node-Red ist ein auf NodeJS basierendes OpenSource-Projekt von IBM, das eine Flow-basierte Programmierung umsetzt.
 
+<div id='section-id-564'/>
+
 ### Installation
+<div id='section-id-565'/>
+
 #### Vorbereitung Helm Chart
 
 Für den PoC (Stand 26.10.22) wird das Node-Red Helm Chart der Firma Schwarz IT in der Version 0.20.0 (23.09.2022) genutzt. Das Helm Chart ist auf [ArtifactHub](https://artifacthub.io/packages/helm/node-red/node-red/0.20.0) veröffentlicht. 
 Für die Nutzung in einer Offline-Umgebung ist die Datei unter dem Pfad ```kubernetes/node-red/node-red-0.20.0.tgz``` zur Verfügung gestellt und kann in die private Registry Harbor hochgeladen werden. Dazu wird die Weboberfläche von Harbor unter ```https://harbor.cyber``` aufgerufen und der Menüpunkt *Projects --> cyber-range --> Helm Charts --> Upload* gewählt. Über den File-Upload-Dialog wird die Datei ```kubernetes/node-red/node-red-0.20.0.tgz``` in die Helm Registry geladen. Der folgende Screenshot zeigt das hochgeladenen Node-Red Helm Template Chart in Harbor.
 
 <img src="manual/harbor_nodered.png" width="800">
+
+<div id='section-id-572'/>
 
 #### Docker Images
 
@@ -570,6 +703,8 @@ docker pull quay.io/kiwigrid/k8s-sidecar:1.19.4
 docker tag quay.io/kiwigrid/k8s-sidecar:1.19.4 harbor.cyber/cyber-range/quay.io/kiwigrid/k8s-sidecar:1.19.4
 docker push harbor.cyber/cyber-range/quay.io/kiwigrid/k8s-sidecar:1.19.4
 ```
+
+<div id='section-id-586'/>
 
 #### Ausrollen im Kubernetes-Cluster
 
@@ -587,6 +722,8 @@ Die Installation ist vollendet, wenn folgende Pods erzeugt wurden:
 
 
 Der Ingress für Node-Red wurde in der Datei ```kubernetes/node-red/values.yaml``` auf ```nodered.cyber``` festgelegt. Der Webservice ist dadurch unter ```https://nodered.cyber``` erreichbar. Auch hier muss ein DNS-Eintrag auf eine beliebige Kubernetes-Worker-IP gesetzt werden. 
+
+<div id='section-id-603'/>
 
 ### Token für AWX-Zugriff
 
@@ -606,11 +743,17 @@ Nach dem Speichern erscheint ein Fenster mit dem Token sowie einem Refresh-Token
 
 Der erzeugte Token kann nun in allen Logik-Modulen verwendet werden, die einen Zugriff auf die AWX-API benötigen. Hier nocheinmal der Hinweis: Der Token bezieht sich auf die Ausführungsrechte für den Nuzter ```fasac```. Jedes hinterlegte JobTemplate muss einzeln die Berechtigungen für diesen Nutzer erhalten. Im Fehlerfall sollten die entsprechenden Nutzerrechte im JobTemplate und der hier erstellte Token überprüft werden.
 
+<div id='section-id-621'/>
+
 ### Beschreibung der FASAC-Module
 
 Die Beschreibungen der FASAC-Module sind über die Hilfebeschreibung der einzelnen Module sowie [**HIER**](./node-red/README.md) einsehbar. 
 
+<div id='section-id-625'/>
+
 ## Installation der FASAC-Module
+
+<div id='section-id-627'/>
 
 ### Entwicklungsumgebung / -phase
 Während der Entwicklung ist es vorteilhaft, die Module möglichst einfach innerhalb von Node-RED zur Verfügung zu stellen. Die hier beschriebene Kubernetes-Umgebung setzt auf Dynamic Provisioning ,it Longhorn, was durch seine dynamisch erzeugten Volumes viele Vorteile bietet, jedoch in der Entwicklungsphase problematisch sein kann. So ist es nicht möglich, von außen auf die Daten des Volumes zuzugreifen und zu verändern. Das Node-RED-Deployment wird ebenfalls mit einem dynamischen Longhorn-Volume gestartet. In diesem Volume werden die persistenten Daten (u.a. die Node-Red-Module und ihre Einstellungen) gespeichert. In einem Longhorn-Volume lassen sich die Node-RED-Module nicht von außen nachträglich installieren oder verändern. Deshalb ist in diesem Szenario ein dynamisches Longhorn-Volume nicht zielführend. Als Alternative wird im Folgenden die Installation eines dynamischen NFS-Provisioner im Kubernetes-Cluster beschrieben, der ein externes NFS-Verzeichnis mounted und darin ein dynamisches Volume für den Node-RED-Pod zur Verfügung stellt. Dieses NFS-Verzeichnis lässt sich dann extern ansprechen und z.B. als Projektpfad in einer Entwicklungsumgebung für Node-RED-Bausteine nutzen.
@@ -669,17 +812,35 @@ helm upgrade -f kubernetes/node-red/values.yaml nodered myrepo/node-red  --names
 ```
 Alternativ kann der bestehende Node-RED-Workload gelöscht und neu erstellt werden.
 
-Im NFS-Share wird folgende Ordnerstruktur angelegt.
+Im NFS-Share wird folgende Ordnerstruktur angelegt:
 ```bash
+|-- nodered-nodered-node-red-pvc-<RANDOM> # <-- dynmisch erzeugtes NFS-Volume
+    |-- lib
+    |-- node_modules
+        |-- node-red-node-email
+        |-- cronosjs
+        |-- cross-spawn
+        |-- moment-timezone
+        |-- node-red-contrib-chronos
+        |-- node-red-contrib-fasac # <-- hierhin kommt das Projektverzeichnis der Node-RED-Bausteine
+```
+Der [Projektpfad](./node-red/) für die Node-RED-Bausteine muss an die im Listing markierte Stelle kopiert werden, damit sie von Node-RED geladen werden kann.
 
+Anders als in der nachfolgend beschriebenden Methode (hier wird dies von Node-RED bei der Installation durchgeführt) müssen die Javascriot-Abhängigkeiten der FASAC-Module händisch installiert werden. Alle zu installierenden Pakete sind in der Datei [package.json](./node-red/package.json) aufgeführt. Um die Abhängigkeiten lokal (nicht global) im Projektverzeichnis zu installieren, müssen folgende Befehle ausgeführt werden:
+
+```bash
+cd <NFS-SHARE>/<DYNAMIC-PVC-VOLUME>/node_modules/node-red-contrib-fasac
+npm install # package.json wird automatisch ausgewählt
 ```
 
 **Hinweis**
 Werden Daten im NFS-Share geändert (z.B. neue oder abgeänderte Module), so muss der Node-RED-Pod neu gestartet werden, da Node-RED keine Möglichkeit bietet, die Daten *On-The-Fly* neu zuladen.
 
+<div id='section-id-708'/>
+
 ### Produktivumgebung
 
-Des Weiteren ist die Installation der Module über den [offiziellen Weg von Node-RED](https://nodered.org/docs/creating-nodes/packaging) möglich. Dazu wird aus den FASAC-Modulen ein Paket erzeugt und auf NPM veröffentlicht. Dafür ist ein Account auf [NPM](https://www.npmjs.com) erforderlich. Nach der Veröffentlichung des Moduls lässt sich dieses im Palettenmanager von Node-RED finden und installieren. Zu beachten ist, dass bei jeder Code-Änderung der Versionszähler des Node-RED-Pakets in der [package.json](./node-red/package.json) erhöht werden muss, bevor es veröffentlicht werden kann.Ebenfalls ist es zwingend erforderlich, dass die Schlüsselwörter "node-red" sowie ```fasac```(für die Suche) in der [package.json](./node-red/package.json) gesetzt sind.
+Des Weiteren ist die Installation der Module über den [offiziellen Weg von Node-RED](https://nodered.org/docs/creating-nodes/packaging) möglich. Dazu wird aus den FASAC-Modulen ein Paket erzeugt und auf NPM veröffentlicht. Dafür ist ein Account auf [NPM](https://www.npmjs.com) erforderlich. Nach der Veröffentlichung des Moduls lässt sich dieses im Palettenmanager von Node-RED finden und installieren. Zu beachten ist, dass bei jeder Code-Änderung der Versionszähler des Node-RED-Pakets in der [package.json](./node-red/package.json) erhöht werden muss, bevor es veröffentlicht werden kann.Ebenfalls ist es zwingend erforderlich, dass die Schlüsselwörter ```node-red``` sowie ```fasac```(für die Suche) in der [package.json](./node-red/package.json) gesetzt sind.
 
 Mit folgenden Befehlen wird das Node-RED-Modul ```node-red-contrib-fasac``` gepackt und auf npm veröffentlicht:
 ```bash
@@ -688,9 +849,15 @@ npm pack
 npm publish # user data required
 ```
 
+Danach kann das Modul über den Palettenmanager gesucht und installiert werden. Eventuell ist hier das Modul nicht sofort sichtbar (oder in seiner aktuellsten Version), da Node-RED die entsprechenden Repositories nur periodisch aktualisiert.
+
+<div id='section-id-719'/>
+
 ## Kubevirt
 
 Kubevirt ist ein Addon für Kubernetes, das es ermöglicht, virtuelle Maschinen innerhalb des Clusters auszuführen. Für den FASAC-Workload *VM: Start* wird Kubevirt benötigt.
+
+<div id='section-id-723'/>
 
 ### Installation
 
@@ -703,6 +870,8 @@ $ kubectl apply -f https://github.com/kubevirt/kubevirt/releases/download/${RELE
 $ kubectl -n kubevirt wait kv kubevirt --for condition=Available
 ```
 
+<div id='section-id-734'/>
+
 ### Support für Emulation
 
 Je nach verwendeter Hardware im Cluster ist es notwendig, den Support von Kubevirt für eine *Emulation* von Hardware zu aktivieren. Eine entsprechende Anleitung findet sich auf der [Github-Seite](https://github.com/kubevirt/kubevirt/blob/main/docs/software-emulation.md) von Kubevirt. Mit dem Aufruf von ```kubectl --namespace kubevirt edit kubevirt kubevirt``` lässt sich die Konfiguration von Kubevirt öffnen. Folgender Eintrag muss hinzugfügt bzw. editiert werden:
@@ -713,9 +882,13 @@ spec:
       useEmulation: true
 ```
 
+<div id='section-id-744'/>
+
 ## Vorbereitung für FASAC-Szenarien
 
 Einzelne Szenarien werden durch Kubernets Nampespaces repräsentiert. Die Logiken in Node-Red benötigen einen validen Token eines für den Namespace berechtigten Accounts. Zu diesem Zweck wird für jedes Szenario ein eigener Namespace angelegt sowie ein entsprechender Serviceaccount erstellt. Desweiteren wird eine Netzwerkrichtlinie für jeden Namespace eines Szenarios gesetzt, der eine Kommunikation per *default* unterbindet. Eine Ausnahme wird über ein entsprechendes Logikmodul in Nodde-Red eingerichtet.
+
+<div id='section-id-748'/>
 
 ### Szenario-Namespace
 
@@ -724,6 +897,8 @@ Der Namespace eines Szenarios wird mit folgendem Befehl auf dem Cluster angelegt
 ```bash
 kubectl create ns apt999
 ```
+
+<div id='section-id-756'/>
 
 ### Serviceaccount für den Namespace
 
@@ -833,6 +1008,8 @@ kubectl get secret control \
   -o jsonpath='{.data.token}' | base64 -d
 ```
 
+<div id='section-id-864'/>
+
 ### Netzwerkrichtlinie
 
 Mit folgendem Befehl wird eine Netzwerkrichtlinie erstellt, die eine ausgehende Kommunikation der Pods in einem Namespace verbietet:
@@ -852,6 +1029,8 @@ spec:
 EOF
 ```
 
+<div id='section-id-883'/>
+
 ### Labels für die Kontrollschicht
 
 Namespaces für Szenarien werden mit Netzwerkrichtlinien erstellt, die eine ausgehende Kommunikation zu anderen Namensräumen nicht zulassen. Kommunikationsverbindungen zur (notwendigen) Kontrollschicht werden durch Ausnahmen in den Netzwerkrichtlinien erreicht. Eine entsprechende Regel bezieht sich dabei immer auf ein Label. Alle Namespaces der Kontrollschicht bekommen deshalb ein gemeinsames Label. Eine mit diesem Label definierte *Allow*-Netzwerkrichtlinie schaltet dann die Verbindung zu allen Namespaces der Kontrollschicht frei.
@@ -861,17 +1040,25 @@ kubectl label namespace awx plane=fasac-control
 kubectl label namespace nodered plane=fasac-control
 ```
 
+<div id='section-id-892'/>
+
 ## Kubernetes Workloads für FASAC
 
 Einige Node-RED-Logikbausteine und Ansible Playbooks benötigen für ihre Ausführung Kubernetes Workloads in Form von Helm Charts. Im folgenden Abschnitt wird auf die Installation der entsprechenden Charts eingegangen.
+
+<div id='section-id-896'/>
 
 ### fasac-control
 
 Der Workload *fasac-control* ist ein Helm Chart, der vom Node-Red-Knoten *Scenario Plane Prepare* genutzt wird. Mit Stand 03.11.2022 ist seine einzige Funktion, Ausnahmen in den Netzwerkrichtlinien (ausgehende Verbindungen) zu setzen. Das Paket ```kubernetes/fasac-scenario/fasac-scenario-0.1.tgz``` wird nach Harbor in das Helm Repository im Projekt *cyber-range* geladen.
 
+<div id='section-id-900'/>
+
 ### fasac-vm
 
 Der Workload *fasac-control* ist ein Helm Chart, der vom Node-Red-Knoten *VM Start* genutzt wird. Mit diesem Workload werden mithile von KubeVirt virtuelle Maschinen innerhalb des Kubernetes-Cluster gestartet. Das Paket ```kubernetes/fasac-vm/fasac-vm-0.1.tgz``` wird nach Harbor in das Helm Repository im Projekt *cyber-range* geladen.
+
+<div id='section-id-904'/>
 
 ### Metasploit und Msfvenom
 
@@ -888,6 +1075,8 @@ docker tag metasploitframework/metasploit-framework harbor.cyber/cyber-range/met
 docker push harbor.cyber/cyber-range/metasploitframework/metasploit-framework
 ```
 
+<div id='section-id-919'/>
+
 ### Mailserver
 
 Für die Erstellung eines Mailserver wird das Helm Charts ```docker-mailserver``` verwendet. Dafür wird das Pakete ```kubernetes/docker-mailserver/docker-mailserver-0.4.tgz``` nach Harbor in das Helm Repository im Projekt *cyber-range* geladen. Mit Stand 03.11.2022 nutzen folgende Node-Red-Module dieses Helm Chart:
@@ -902,9 +1091,13 @@ docker tag mailserver/docker-mailserver:11.1.0 harbor.cyber/cyber-range/mailserv
 docker push harbor.cyber/cyber-range/mailserver/docker-mailserver:11.1.0
 ```
 
+<div id='section-id-933'/>
+
 ## Bereitstellung und Anpassungen von Cloud-Images
 
 Beim Erstellen und Starten von virtuellen Maschinen (per KubeVirt) kommen sogenannte Cloud-Images zur. Hierbei ist zu beachten, dass diese Imgaes nicht eins zu eins übernommen werden können, sondern vorher in ein Docker-Image umgewandelt werden müssen, da KubeVirt nur ein solches Format liest. Gleichzeitig kann es je nach Szenario notwendig sein, die Images im Vorfeld anzupassen. Im folgenden Beispiel wird das Cloud-Image für Ubuntu Server 22.10 um das Python-Modul [*attachment-downloader*](https://github.com/jamesridgway/attachment-downloader) erweitert und in ein Docker-Image umgewandelt.
+
+<div id='section-id-937'/>
 
 ### Herunterladen und Bearbeiten des Cloud-Images
 
@@ -918,6 +1111,8 @@ Im Anschluss wird das Image mithilfe der Software ```virt-customize``` (muss evt
 ```bash
 sudo virt-customize -a kinetic-server-cloudimg-amd64.img --run-command [pip3 install attachment-downloader]
 ```
+
+<div id='section-id-950'/>
 
 ### Umwandlung in ein Docker-Image
 
