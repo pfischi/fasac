@@ -611,20 +611,17 @@ Zum Schluss werden die eigentlichen Job Templates im Inventory erzeugt und mit d
 **!!Wichtig** Der Name des Job Templates ist hier entscheidend und muss mit den richtigen Playbooks verknüpft sein.
 Der Inventory-Name wird von den Node-Red-Logiken genutzt, um das entsprechende Inventory über die AWX-API aufzurufen. Werden hier oder in Node-Red Änderungen vorgenommen, müssen diese entsprechend in den Node-Red-Modulen oder bei der Bezeichnung der Job Templates bzw. die Zuordnung der Playbooks abgeändert werden.
 
-Folgende Job-Template-Bezeichnungen (Beachtung der Groß- und Kleinschreibung!) und Playbook-Zuordnungen nutzt der PoC (und die Node-Red-Logikmodule) mit Stand 26.10.22:
+Folgende Job-Template-Bezeichnungen (Beachtung der Groß- und Kleinschreibung!) und Playbook-Zuordnungen nutzt der PoC (und die Node-Red-Logikmodule) mit Stand 19.12.22:
 
 ```yaml
-JobTemplate name: Modify File
-Playbook:         modify_file.yml
-
-JobTemplate name: Delete File
-Playbook:         delete_file.yml
-
 JobTemplate name: Helm Install
 Playbook:         helm_install.yml
 
 JobTemplate name: Helm Delete
 Playbook:         helm_delete.yml
+
+JobTemplate name: VM Start
+Playbook:         kubevirt_start_vm.yaml
 ```
 
 Der Pfad zu einem Playbook wird aus dem Git-Account bezogen und kann über den Punkt *Playbook* ausgewählt werden. Der *Job Type* wird auf *Run* festgelegt. Eine weitere **wichtige Einstellung* ist die Aktivierung der Checkbox *Prompt on launch* für das Feld *Variables*. Erst durch die Aktivierung dieser Option ist es möglich, dass die Variablen zur Laufzeit durch FASAC dynamisch gesetzt werden können. Treten Fehler bei der Jobausführung ist diese Einstellung der erste Anlaufpunkt für eine Fehlerbehebung. Bei dem Parameter *Job Inventory* wird da zuvor erstellte Inventory ausgewählt. Bei der Einstellung *Project* wird auf das bereits erstellte Git-Projekt verwiesen. Ganz am Ende der Einstellungsseite für ein Job-Template kann bei Bedarf noch die Option *Concurrent Job* ausgewählt werden. AWX ermöglicht dann, dass mehrere Jobs dieses Job-Templates-Typs ausgeführt werden können. Diese Option muss noch weiter getestet werden, inwieweit sie Auswirkung auf die Ausführung der FASAC-Logiken hat.
@@ -639,10 +636,6 @@ Zum Schluss muss dem AWX-Nutzer noch das Ausführungsrecht für jedes einzelne J
 <img src="manual/awx_jobtemplate_access.png" width="800">
 
 <img src="manual/awx_jobtemplate_rights.png" width="800">
-
-Im PoC sind mit Stand 26.10.2022 folgende Job Templates in AWX integriert:
-
-<img src="manual/awx_jobtemplate_all.png" width="800">
 
 <div id='section-id-531'/>
 
