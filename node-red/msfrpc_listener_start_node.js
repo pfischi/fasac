@@ -1,4 +1,4 @@
-const { default: MsfRpc } = await import('./msfrpc.js');
+const MsfRpc = await import('./msfrpc.js');
 
 module.exports = function(RED) {
     function MsfRpcStartListenerNode(config) {
