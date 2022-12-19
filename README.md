@@ -2,64 +2,69 @@ Das folgende Dokument beschreibt die Installation der Kubernetes-Umgebung sowie 
 
 ## Inhaltsverzeichnis
 
-  - [Virtuelle Maschinen für Harvester](#section-id-3)
-    - [Hardwareressourcen](#section-id-5)
-    - [Image](#section-id-19)
-    - [Master-Knoten](#section-id-24)
-    - [Slave-Knoten](#section-id-32)
-    - [Ersteinrichtung](#section-id-38)
-    - [Bereitstellung des Cloud-Image](#section-id-57)
-    - [Cloud Config Template](#section-id-65)
-  - [Rancher](#section-id-94)
-    - [Installation](#section-id-98)
-  - [Integration von Harvester](#section-id-118)
-  - [Einrichtung des Kubernetes-Cluster](#section-id-132)
-    - [Pool-Konfiguration](#section-id-134)
-    - [Kubectl](#section-id-214)
-  - [Longorn](#section-id-234)
-  - [Helm](#section-id-267)
-  - [Harbor](#section-id-277)
-    - [Installation](#section-id-279)
-    - [Harbor Registry Certificate](#section-id-324)
-      - [Download der Registry-CA](#section-id-328)
-      - [Bereitstellung der CA auf Entwicklersystem](#section-id-334)
-      - [Bereitstellung für die Kubernetes Knoten](#section-id-346)
-  - [Zugriff auf die Harbor Docker Registry und Helm Registry](#section-id-382)
-  - [AWX](#section-id-397)
-    - [Installation](#section-id-401)
-      - [Ausrollen im Kubernetes-Cluster](#section-id-405)
-    - [Einrichtung](#section-id-422)
-    - [Nutzereinrichtung](#section-id-437)
-    - [Project und Git-Zugang](#section-id-448)
-    - [Inventory](#section-id-465)
-    - [Job Templates](#section-id-479)
-    - [Custom Execution Environment](#section-id-531)
-  - [Node-Red](#section-id-560)
-    - [Installation](#section-id-564)
-      - [Vorbereitung Helm Chart](#section-id-565)
-      - [Docker Images](#section-id-572)
-      - [Ausrollen im Kubernetes-Cluster](#section-id-586)
-    - [Token für AWX-Zugriff](#section-id-603)
-    - [Beschreibung der FASAC-Module](#section-id-621)
-  - [Installation der FASAC-Module](#section-id-625)
-    - [Entwicklungsumgebung / -phase](#section-id-627)
-    - [Produktivumgebung](#section-id-708)
-  - [Kubevirt](#section-id-719)
-    - [Installation](#section-id-723)
-    - [Support für Emulation](#section-id-734)
-  - [Vorbereitung für FASAC-Szenarien](#section-id-744)
-    - [Szenario-Namespace](#section-id-748)
-    - [Serviceaccount für den Namespace](#section-id-756)
-    - [Netzwerkrichtlinie](#section-id-864)
-    - [Labels für die Kontrollschicht](#section-id-883)
-  - [Kubernetes Workloads für FASAC](#section-id-892)
-    - [fasac-control](#section-id-896)
-    - [fasac-vm](#section-id-900)
-    - [Metasploit und Msfvenom](#section-id-904)
-    - [Mailserver](#section-id-919)
-  - [Bereitstellung und Anpassungen von Cloud-Images](#section-id-933)
-    - [Herunterladen und Bearbeiten des Cloud-Images](#section-id-937)
-    - [Umwandlung in ein Docker-Image](#section-id-950)
+- [Inhaltsverzeichnis](#inhaltsverzeichnis)
+- [Virtuelle Maschinen für Harvester](#virtuelle-maschinen-für-harvester)
+  - [Hardwareressourcen](#hardwareressourcen)
+  - [Image](#image)
+  - [Master-Knoten](#master-knoten)
+  - [Slave-Knoten](#slave-knoten)
+  - [Ersteinrichtung](#ersteinrichtung)
+  - [Bereitstellung des Cloud-Image](#bereitstellung-des-cloud-image)
+  - [Cloud Config Template](#cloud-config-template)
+- [Rancher](#rancher)
+  - [Installation](#installation)
+  - [Integration von Harvester](#integration-von-harvester)
+  - [Einrichtung des Kubernetes-Cluster](#einrichtung-des-kubernetes-cluster)
+    - [Pool-Konfiguration](#pool-konfiguration)
+    - [Kubectl](#kubectl)
+- [Longorn](#longorn)
+- [Helm](#helm)
+- [Harbor](#harbor)
+  - [Installation](#installation-1)
+  - [Harbor Registry Certificate](#harbor-registry-certificate)
+    - [Download der Registry-CA](#download-der-registry-ca)
+    - [Bereitstellung der CA auf Entwicklersystem](#bereitstellung-der-ca-auf-entwicklersystem)
+    - [Bereitstellung für die Kubernetes Knoten](#bereitstellung-für-die-kubernetes-knoten)
+- [Zugriff auf die Harbor Docker Registry und Helm Registry](#zugriff-auf-die-harbor-docker-registry-und-helm-registry)
+- [AWX](#awx)
+  - [Installation](#installation-2)
+    - [Ausrollen im Kubernetes-Cluster](#ausrollen-im-kubernetes-cluster)
+  - [Einrichtung](#einrichtung)
+  - [Nutzereinrichtung](#nutzereinrichtung)
+  - [Project und Git-Zugang](#project-und-git-zugang)
+  - [Inventory](#inventory)
+  - [Job Templates](#job-templates)
+  - [Custom Execution Environment](#custom-execution-environment)
+- [Node-Red](#node-red)
+  - [Installation](#installation-3)
+    - [Vorbereitung Helm Chart](#vorbereitung-helm-chart)
+    - [Docker Images](#docker-images)
+    - [Ausrollen im Kubernetes-Cluster](#ausrollen-im-kubernetes-cluster-1)
+  - [Token für AWX-Zugriff](#token-für-awx-zugriff)
+  - [Beschreibung der FASAC-Module](#beschreibung-der-fasac-module)
+  - [Beispiel-Flow für Node-RED](#beispiel-flow-für-node-red)
+- [Installation der FASAC-Module](#installation-der-fasac-module)
+  - [Entwicklungsumgebung / -phase](#entwicklungsumgebung---phase)
+  - [Produktivumgebung](#produktivumgebung)
+  - [Aktueller Node-RED-Baustein für Node-RED](#aktueller-node-red-baustein-für-node-red)
+- [Kubevirt](#kubevirt)
+  - [Installation](#installation-4)
+  - [Support für Emulation](#support-für-emulation)
+- [Vorbereitung für FASAC-Szenarien](#vorbereitung-für-fasac-szenarien)
+  - [Szenario-Namespace](#szenario-namespace)
+  - [Serviceaccount für den Namespace](#serviceaccount-für-den-namespace)
+  - [Netzwerkrichtlinie](#netzwerkrichtlinie)
+  - [Labels für die Kontrollschicht](#labels-für-die-kontrollschicht)
+- [Kubernetes Workloads für FASAC](#kubernetes-workloads-für-fasac)
+  - [fasac-control](#fasac-control)
+  - [fasac-vm](#fasac-vm)
+  - [Metasploit und Msfvenom](#metasploit-und-msfvenom)
+  - [Mailserver](#mailserver)
+- [Bereitstellung und Anpassungen von Cloud-Images](#bereitstellung-und-anpassungen-von-cloud-images)
+  - [Herunterladen und Bearbeiten des Cloud-Images](#herunterladen-und-bearbeiten-des-cloud-images)
+  - [Umwandlung in ein Docker-Image](#umwandlung-in-ein-docker-image)
+- [Troubleshooting](#troubleshooting)
+  - [Pod startet nicht und verbleibt im Status *ContainerCreating*](#pod-startet-nicht-und-verbleibt-im-status-containercreating)
 
 <div id='section-id-3'/>
 
@@ -751,6 +756,10 @@ Die Beschreibungen der FASAC-Module sind über die Hilfebeschreibung der einzeln
 
 <div id='section-id-625'/>
 
+### Beispiel-Flow für Node-RED
+
+Ein beispielhafter (und komplexer) Workflow ist unter dem Pfad ```kubernetes/node-red/example-flow``` gespeichert. Dieser kann über die Node-RED-GUI geladen werden. Der Flow ist erst nach der vollständigen Einrichtung des Kubernetes-Clusters, der Installation des [FASAC-Node-RED-Moduls](#installation-der-fasac-module) sowie aller [FASAC-Workflows](#kubernetes-workloads-für-fasac) ausführbar.
+
 ## Installation der FASAC-Module
 
 <div id='section-id-627'/>
@@ -824,7 +833,8 @@ Im NFS-Share wird folgende Ordnerstruktur angelegt:
         |-- node-red-contrib-chronos
         |-- node-red-contrib-fasac # <-- hierhin kommt das Projektverzeichnis der Node-RED-Bausteine
 ```
-Der [Projektpfad](./node-red/) für die Node-RED-Bausteine muss an die im Listing markierte Stelle kopiert werden, damit sie von Node-RED geladen werden kann. **ACHTUNG**: Werden in Node-RED über den Palettenmanager Module installiert, wird der komplette *node_modules*-Ordner von Node-RED gelöscht. Der Projektpfad sollte also nicht direkt auf den NFS-Share verweisen, sondern dessen Inhalt in das beschriebene Verzeichnis kopiert werden. Dies kann z.B. als Anweisung vor jedem Bau- oder Debug-Prozess in der Entwicklungsumgebung umgesetzt werden.
+Der [Projektpfad](./node-red/) für die Node-RED-Bausteine muss an die im Listing markierte Stelle kopiert werden, damit sie von Node-RED geladen werden kann. 
+**ACHTUNG**: Werden in Node-RED über den Palettenmanager Module installiert, werden manuell hinzugefügte Module im *node_modules*-Ordner von Node-RED gelöscht und somit auch die FASAC-Module. Der Projektpfad sollte also nicht direkt auf den NFS-Share verweisen, sondern dessen Inhalt in das beschriebene Verzeichnis kopiert werden. Dies kann z.B. als Anweisung vor jedem Bau- oder Debug-Prozess in der Entwicklungsumgebung umgesetzt werden.
 
 Anders als in der nachfolgend beschriebenden Methode (hier wird dies von Node-RED bei der Installation durchgeführt) müssen die Javascriot-Abhängigkeiten der FASAC-Module händisch installiert werden. Alle zu installierenden Pakete sind in der Datei [package.json](./node-red/package.json) aufgeführt. Um die Abhängigkeiten lokal (nicht global) im Projektverzeichnis zu installieren, müssen folgende Befehle ausgeführt werden:
 
@@ -851,7 +861,9 @@ npm publish # user data required
 
 Danach kann das Modul über den Palettenmanager gesucht und installiert werden. Eventuell ist hier das Modul nicht sofort sichtbar (oder in seiner aktuellsten Version), da Node-RED die entsprechenden Repositories nur periodisch aktualisiert.
 
-<div id='section-id-719'/>
+### Aktueller Node-RED-Baustein für Node-RED
+
+Mit Stand 19.12.2022 ist die Version 0.1.2 von ```node-red-contrib-fasac```die aktuelleste Version auf [NPM](https://www.npmjs.com/package/node-red-contrib-fasac) und [Node-RED](https://flows.nodered.org/node/node-red-contrib-fasac).
 
 ## Kubevirt
 
