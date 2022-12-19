@@ -758,7 +758,7 @@ Die Beschreibungen der FASAC-Module sind über die Hilfebeschreibung der einzeln
 
 ### Beispiel-Flow für Node-RED
 
-Ein beispielhafter (und komplexer) Workflow ist unter dem Pfad ```kubernetes/node-red/example-flow``` gespeichert. Dieser kann über die Node-RED-GUI geladen werden. Der Flow ist erst nach der vollständigen Einrichtung des Kubernetes-Clusters, der Installation des [FASAC-Node-RED-Moduls](#installation-der-fasac-module) sowie aller [FASAC-Workflows](#kubernetes-workloads-für-fasac) ausführbar.
+Ein beispielhafter (und komplexer) Workflow ist unter dem Pfad [kubernetes/node-red/example-flow](kubernetes/node-red/example-flow) gespeichert. Dieser kann über die Node-RED-GUI geladen werden. Der Flow ist erst nach der vollständigen Einrichtung des Kubernetes-Clusters, der Installation des [FASAC-Node-RED-Moduls](#installation-der-fasac-module) sowie aller [FASAC-Workflows](#kubernetes-workloads-für-fasac) ausführbar.
 
 ## Installation der FASAC-Module
 
