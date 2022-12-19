@@ -863,7 +863,7 @@ Danach kann das Modul über den Palettenmanager gesucht und installiert werden. 
 
 ### Aktueller Node-RED-Baustein für Node-RED
 
-Mit Stand 19.12.2022 ist die Version 0.1.2 von ```node-red-contrib-fasac```die aktuelleste Version auf [NPM](https://www.npmjs.com/package/node-red-contrib-fasac) und [Node-RED](https://flows.nodered.org/node/node-red-contrib-fasac).
+Mit Stand 19.12.2022 ist die Version 0.1.3 von ```node-red-contrib-fasac```die aktuelleste Version auf [NPM](https://www.npmjs.com/package/node-red-contrib-fasac) und [Node-RED](https://flows.nodered.org/node/node-red-contrib-fasac).
 
 ## Kubevirt
 
