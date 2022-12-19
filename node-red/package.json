@@ -2,7 +2,6 @@
   "name": "node-red-contrib-fasac",
   "version": "0.1.2",
   "dependencies": {
-    "awx-sdk": "^1.0.2",
     "axios": "^0.27.2",
     "docker-names": "^1.2.1",
     "yaml": "^2.1.1",
